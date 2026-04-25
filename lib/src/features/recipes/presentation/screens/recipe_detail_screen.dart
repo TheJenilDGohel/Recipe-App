@@ -1,17 +1,17 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../core/widgets/error_view.dart';
+import 'package:recipe_app/src/core/widgets/error_view.dart';
 import '../providers/recipe_details_provider.dart';
 import '../widgets/recipe_shimmer.dart';
 
 class RecipeDetailScreen extends ConsumerWidget {
-  final String mealId;
-
   const RecipeDetailScreen({
     super.key,
     required this.mealId,
   });
+
+  final String mealId;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -51,7 +51,7 @@ class RecipeDetailScreen extends ConsumerWidget {
               ),
               SliverPadding(
                 padding: const EdgeInsets.all(16.0),
-                child: SliverList(
+                sliver: SliverList(
                   delegate: SliverChildListDelegate([
                     Row(
                       children: [
