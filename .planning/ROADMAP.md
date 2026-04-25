@@ -62,7 +62,7 @@
   3. Location permission denials are handled gracefully with fallbacks or informative prompts.
 **Plans**: 3 plans
 - [x] 04-01-PLAN.md — Data Layer Extensions for Area/Category filtering.
-- [ ] 04-02-PLAN.md — Contextual Logic (Time & Location mapping).
+- [x] 04-02-PLAN.md — Contextual Logic (Time & Location mapping).
 - [ ] 04-03-PLAN.md — Contextual UI & Home Integration.
 **UI hint**: yes
 
