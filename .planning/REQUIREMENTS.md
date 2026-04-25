@@ -35,7 +35,7 @@
 |-------------|-------|--------|
 | SMART-01 | Phase 2 | Complete |
 | SMART-02 | Phase 4 | Pending |
-| SMART-03 | Phase 4 | Pending |
+| SMART-03 | Phase 4 | Complete |
 | SMART-04 | Phase 2 | Complete |
 | OFF-01 | Phase 3 | Pending |
 | OFF-02 | Phase 3 | Pending |
