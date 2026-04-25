@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:recipe_app/src/core/widgets/empty_state.dart';
+import 'package:recipe_app/src/core/widgets/error_view.dart';
 import 'package:recipe_app/src/features/recipes/presentation/providers/search_provider.dart';
+import 'package:recipe_app/src/features/recipes/presentation/screens/recipe_detail_screen.dart';
 import 'package:recipe_app/src/features/recipes/presentation/widgets/recipe_card.dart';
+import 'package:recipe_app/src/features/recipes/presentation/widgets/recipe_shimmer.dart';
 import 'package:recipe_app/src/features/recipes/presentation/widgets/search_bar.dart';
 
 class HomeScreen extends ConsumerWidget {
@@ -24,13 +28,14 @@ class HomeScreen extends ConsumerWidget {
             child: searchResults.when(
               data: (meals) {
                 if (meals.isEmpty) {
-                  return Center(
-                    child: Text(
-                      searchQuery.isEmpty
-                          ? 'Start searching for delicious recipes!'
-                          : 'No recipes found for "$searchQuery"',
-                      style: Theme.of(context).textTheme.bodyLarge,
-                    ),
+                  return EmptyState(
+                    title: searchQuery.isEmpty
+                        ? 'Search Recipes'
+                        : 'No Recipes Found',
+                    message: searchQuery.isEmpty
+                        ? 'Start searching for delicious recipes!'
+                        : 'No recipes found for "$searchQuery". Try another search.',
+                    icon: searchQuery.isEmpty ? Icons.search : Icons.search_off,
                   );
                 }
                 return ListView.builder(
@@ -43,16 +48,21 @@ class HomeScreen extends ConsumerWidget {
                       child: RecipeCard(
                         meal: meal,
                         onTap: () {
-                          // TODO: Navigate to details
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (context) => RecipeDetailScreen(mealId: meal.id),
+                            ),
+                          );
                         },
                       ),
                     );
                   },
                 );
               },
-              loading: () => const Center(child: CircularProgressIndicator()),
-              error: (error, stack) => Center(
-                child: Text('Error: ${error.toString()}'),
+              loading: () => const RecipeListShimmer(),
+              error: (error, stack) => ErrorView(
+                message: error.toString(),
+                onRetry: () => ref.refresh(searchRecipesProvider(searchQuery)),
               ),
             ),
           ),

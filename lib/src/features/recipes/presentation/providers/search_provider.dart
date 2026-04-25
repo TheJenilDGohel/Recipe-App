@@ -12,7 +12,7 @@ Future<List<Meal>> searchRecipes(SearchRecipesRef ref, String query) async {
   }
 
   // Debouncing logic
-  final link = ref.keepAlive();
+  ref.keepAlive();
   Timer? timer;
 
   ref.onDispose(() {
