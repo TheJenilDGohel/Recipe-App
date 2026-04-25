@@ -2,8 +2,8 @@
 
 ## Phases
 
-- [ ] **Phase 1: Foundation & DevOps** - Scaffold project with CI/CD and architecture.
-- [ ] **Phase 2: Core Discovery & Search** - Basic API integration, search, and loading states.
+- [x] **Phase 1: Foundation & DevOps** - Scaffold project with CI/CD and architecture.
+- [x] **Phase 2: Core Discovery & Search** - Basic API integration, search, and loading states.
 - [ ] **Phase 3: Offline Persistence & Resilience** - Favorites, caching, and offline state management.
 - [ ] **Phase 4: Contextual Intelligence** - Time and location-based discovery logic.
 - [ ] **Phase 5: Engagement & Polish** - Notifications and micro-interactions.
@@ -35,7 +35,7 @@
 - [x] 02-02-PLAN.md — Search & Home UI (Debounced search providers and list).
 - [x] 02-03-PLAN.md — Detail View & Polish (Recipe details, Shimmers, Global Error UI).
 - [x] 02-04-PLAN.md — Gap Closure: Fix compilation blockers in ErrorView and DetailScreen.
-- [ ] 02-05-PLAN.md — Gap Closure: Fix flawed search debouncing logic.
+- [x] 02-05-PLAN.md — Gap Closure: Fix flawed search debouncing logic.
 **UI hint**: yes
 
 ### Phase 3: Offline Persistence & Resilience
@@ -76,7 +76,7 @@
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1: Foundation & DevOps | 1/1 | Completed | 2026-04-25 |
-| 2: Core Discovery & Search | 3/5 | Gaps found | - |
+| 2: Core Discovery & Search | 5/5 | Completed | 2026-04-25 |
 | 3: Offline Persistence & Resilience | 0/1 | Not started | - |
 | 4: Contextual Intelligence | 0/1 | Not started | - |
 | 5: Engagement & Polish | 0/1 | Not started | - |
