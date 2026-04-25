@@ -37,5 +37,39 @@ final contextualDiscoveryProvider =
 );
 
 typedef ContextualDiscoveryRef = AutoDisposeFutureProviderRef<List<Meal>>;
+String _$contextualDiscoveryTitleHash() =>
+    r'7ffbd32dbcc36516ad727d248e900467d9e7a869';
+
+/// See also [contextualDiscoveryTitle].
+@ProviderFor(contextualDiscoveryTitle)
+final contextualDiscoveryTitleProvider =
+    AutoDisposeFutureProvider<String>.internal(
+  contextualDiscoveryTitle,
+  name: r'contextualDiscoveryTitleProvider',
+  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+      ? null
+      : _$contextualDiscoveryTitleHash,
+  dependencies: null,
+  allTransitiveDependencies: null,
+);
+
+typedef ContextualDiscoveryTitleRef = AutoDisposeFutureProviderRef<String>;
+String _$contextualDiscoverySubtitleHash() =>
+    r'66b2b701b5c353b113826b1b133a5aeee760f304';
+
+/// See also [contextualDiscoverySubtitle].
+@ProviderFor(contextualDiscoverySubtitle)
+final contextualDiscoverySubtitleProvider =
+    AutoDisposeFutureProvider<String>.internal(
+  contextualDiscoverySubtitle,
+  name: r'contextualDiscoverySubtitleProvider',
+  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+      ? null
+      : _$contextualDiscoverySubtitleHash,
+  dependencies: null,
+  allTransitiveDependencies: null,
+);
+
+typedef ContextualDiscoverySubtitleRef = AutoDisposeFutureProviderRef<String>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member
