@@ -1,4 +1,5 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:recipe_app/src/features/recipes/data/datasources/recipe_local_data_source.dart';
 import 'package:recipe_app/src/features/recipes/data/datasources/recipe_remote_data_source.dart';
 import 'package:recipe_app/src/features/recipes/domain/models/meal.dart';
 import 'package:recipe_app/src/features/recipes/domain/repositories/recipe_repository.dart';
@@ -6,27 +7,75 @@ import 'package:recipe_app/src/features/recipes/domain/repositories/recipe_repos
 part 'recipe_repository_impl.g.dart';
 
 class RecipeRepositoryImpl implements RecipeRepository {
-  RecipeRepositoryImpl(this._remoteDataSource);
+  RecipeRepositoryImpl(this._remoteDataSource, this._localDataSource);
 
   final RecipeRemoteDataSource _remoteDataSource;
+  final RecipeLocalDataSource _localDataSource;
 
   @override
-  Future<List<Meal>> searchMeals(String query) {
-    return _remoteDataSource.searchMeals(query);
+  Future<List<Meal>> searchMeals(String query) async {
+    try {
+      final meals = await _remoteDataSource.searchMeals(query);
+      await _localDataSource.cacheMeals(meals);
+      return meals;
+    } catch (_) {
+      // Fallback to local cache on error
+      return _localDataSource.getCachedMeals(query);
+    }
   }
 
   @override
-  Future<Meal?> getMealDetails(String id) {
-    return _remoteDataSource.getMealDetails(id);
+  Future<Meal?> getMealDetails(String id) async {
+    final cached = await _localDataSource.getMeal(id);
+
+    if (cached != null) {
+      final (meal, cachedAt) = cached;
+      final isExpired =
+          DateTime.now().difference(cachedAt) > const Duration(hours: 24);
+
+      if (!isExpired) {
+        return meal;
+      }
+    }
+
+    try {
+      final meal = await _remoteDataSource.getMealDetails(id);
+      if (meal != null) {
+        await _localDataSource.saveMeal(meal);
+        return meal;
+      }
+    } catch (_) {
+      // If network fails, return cached even if expired
+      if (cached != null) {
+        return cached.$1;
+      }
+    }
+
+    return null;
   }
 
   @override
-  Future<Meal?> getRandomMeal() {
-    return _remoteDataSource.getRandomMeal();
+  Future<Meal?> getRandomMeal() async {
+    try {
+      final meal = await _remoteDataSource.getRandomMeal();
+      if (meal != null) {
+        await _localDataSource.saveMeal(meal);
+        return meal;
+      }
+    } catch (_) {
+      // Random meal doesn't have a specific ID to fallback to easily 
+      // without more complex logic, but we could return a random one from cache.
+      // For now, return null as per current implementation.
+    }
+    return null;
   }
 }
 
 @riverpod
 RecipeRepository recipeRepository(RecipeRepositoryRef ref) {
-  return RecipeRepositoryImpl(ref.watch(recipeRemoteDataSourceProvider));
+  return RecipeRepositoryImpl(
+    ref.watch(recipeRemoteDataSourceProvider),
+    ref.watch(recipeLocalDataSourceProvider),
+  );
 }
+

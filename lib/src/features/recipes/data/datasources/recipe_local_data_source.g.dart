@@ -1,25 +1,28 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'recipe_repository_impl.dart';
+part of 'recipe_local_data_source.dart';
 
 // **************************************************************************
 // RiverpodGenerator
 // **************************************************************************
 
-String _$recipeRepositoryHash() => r'8eccfed1da19012dbd12794d04bb040b5329515d';
+String _$recipeLocalDataSourceHash() =>
+    r'63a3417b14b39895118d9a28d6513425a4c73a4a';
 
-/// See also [recipeRepository].
-@ProviderFor(recipeRepository)
-final recipeRepositoryProvider = AutoDisposeProvider<RecipeRepository>.internal(
-  recipeRepository,
-  name: r'recipeRepositoryProvider',
+/// See also [recipeLocalDataSource].
+@ProviderFor(recipeLocalDataSource)
+final recipeLocalDataSourceProvider =
+    AutoDisposeProvider<RecipeLocalDataSource>.internal(
+  recipeLocalDataSource,
+  name: r'recipeLocalDataSourceProvider',
   debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
       ? null
-      : _$recipeRepositoryHash,
+      : _$recipeLocalDataSourceHash,
   dependencies: null,
   allTransitiveDependencies: null,
 );
 
-typedef RecipeRepositoryRef = AutoDisposeProviderRef<RecipeRepository>;
+typedef RecipeLocalDataSourceRef
+    = AutoDisposeProviderRef<RecipeLocalDataSource>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member
