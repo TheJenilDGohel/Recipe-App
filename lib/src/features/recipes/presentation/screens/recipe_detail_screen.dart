@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:recipe_app/src/core/widgets/error_view.dart';
 import '../providers/recipe_details_provider.dart';
 import '../widgets/recipe_shimmer.dart';
+import '../widgets/favorite_toggle.dart';
 
 class RecipeDetailScreen extends ConsumerWidget {
   const RecipeDetailScreen({
@@ -32,6 +33,13 @@ class RecipeDetailScreen extends ConsumerWidget {
               SliverAppBar(
                 expandedHeight: 300,
                 pinned: true,
+                actions: [
+                  CircleAvatar(
+                    backgroundColor: Colors.white.withOpacity(0.7),
+                    child: FavoriteToggle(meal: meal),
+                  ),
+                  const SizedBox(width: 8),
+                ],
                 flexibleSpace: FlexibleSpaceBar(
                   title: Text(
                     meal.name,

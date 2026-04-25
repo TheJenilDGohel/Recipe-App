@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:recipe_app/src/core/widgets/empty_state.dart';
 import 'package:recipe_app/src/core/widgets/error_view.dart';
 import 'package:recipe_app/src/features/recipes/presentation/providers/search_provider.dart';
+import 'package:recipe_app/src/features/recipes/presentation/screens/favorites_screen.dart';
 import 'package:recipe_app/src/features/recipes/presentation/screens/recipe_detail_screen.dart';
 import 'package:recipe_app/src/features/recipes/presentation/widgets/recipe_card.dart';
 import 'package:recipe_app/src/features/recipes/presentation/widgets/recipe_shimmer.dart';
@@ -20,6 +21,18 @@ class HomeScreen extends ConsumerWidget {
       appBar: AppBar(
         title: const Text('Recipe Discovery'),
         centerTitle: true,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.favorite),
+            onPressed: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) => const FavoritesScreen(),
+                ),
+              );
+            },
+          ),
+        ],
       ),
       body: Column(
         children: [

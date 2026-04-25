@@ -6,11 +6,15 @@ class EmptyState extends StatelessWidget {
     this.title = 'No Results',
     this.message = 'Try searching for something else.',
     this.icon = Icons.search_off,
+    this.actionLabel,
+    this.onAction,
   });
 
   final String title;
   final String message;
   final IconData icon;
+  final String? actionLabel;
+  final VoidCallback? onAction;
 
   @override
   Widget build(BuildContext context) {
@@ -40,6 +44,13 @@ class EmptyState extends StatelessWidget {
                     color: Colors.grey[600],
                   ),
             ),
+            if (actionLabel != null && onAction != null) ...[
+              const SizedBox(height: 24),
+              ElevatedButton(
+                onPressed: onAction,
+                child: Text(actionLabel!),
+              ),
+            ],
           ],
         ),
       ),
