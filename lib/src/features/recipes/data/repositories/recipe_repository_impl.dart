@@ -84,6 +84,28 @@ class RecipeRepositoryImpl implements RecipeRepository {
   Future<List<Meal>> getFavorites() {
     return _localDataSource.getFavorites();
   }
+
+  @override
+  Future<List<Meal>> filterByArea(String area) async {
+    try {
+      final meals = await _remoteDataSource.filterByArea(area);
+      await _localDataSource.cacheMeals(meals);
+      return meals;
+    } catch (_) {
+      return [];
+    }
+  }
+
+  @override
+  Future<List<Meal>> filterByCategory(String category) async {
+    try {
+      final meals = await _remoteDataSource.filterByCategory(category);
+      await _localDataSource.cacheMeals(meals);
+      return meals;
+    } catch (_) {
+      return [];
+    }
+  }
 }
 
 @riverpod

@@ -7,4 +7,6 @@ abstract class RecipeRepository {
   Future<void> toggleFavorite(String mealId);
   Future<bool> isFavorite(String mealId);
   Future<List<Meal>> getFavorites();
+  Future<List<Meal>> filterByArea(String area);
+  Future<List<Meal>> filterByCategory(String category);
 }
