@@ -45,6 +45,6 @@
 | TECH-01 | Phase 1 | Pending |
 | TECH-02 | Phase 2 | Pending |
 | TECH-03 | Phase 5 | Pending |
-| TECH-04 | Phase 2 | Pending |
+| TECH-04 | Phase 2 | Complete |
 | OPS-01 | Phase 1 | Pending |
 | OPS-02 | Phase 1 | Pending |

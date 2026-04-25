@@ -34,7 +34,7 @@
 - [x] 02-01-PLAN.md — API & Data Foundation (Models, Data Sources, Repositories).
 - [x] 02-02-PLAN.md — Search & Home UI (Debounced search providers and list).
 - [x] 02-03-PLAN.md — Detail View & Polish (Recipe details, Shimmers, Global Error UI).
-- [ ] 02-04-PLAN.md — Gap Closure: Fix compilation blockers in ErrorView and DetailScreen.
+- [x] 02-04-PLAN.md — Gap Closure: Fix compilation blockers in ErrorView and DetailScreen.
 - [ ] 02-05-PLAN.md — Gap Closure: Fix flawed search debouncing logic.
 **UI hint**: yes
 
