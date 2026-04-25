@@ -69,6 +69,21 @@ class RecipeRepositoryImpl implements RecipeRepository {
     }
     return null;
   }
+
+  @override
+  Future<void> toggleFavorite(String mealId) {
+    return _localDataSource.toggleFavorite(mealId);
+  }
+
+  @override
+  Future<bool> isFavorite(String mealId) {
+    return _localDataSource.isFavorite(mealId);
+  }
+
+  @override
+  Future<List<Meal>> getFavorites() {
+    return _localDataSource.getFavorites();
+  }
 }
 
 @riverpod

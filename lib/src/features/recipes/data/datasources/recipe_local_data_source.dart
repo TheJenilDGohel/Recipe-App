@@ -13,6 +13,9 @@ abstract class RecipeLocalDataSource {
   Future<(Meal meal, DateTime cachedAt)?> getMeal(String id);
   Future<void> cacheMeals(List<Meal> meals);
   Future<List<Meal>> getCachedMeals(String query);
+  Future<void> toggleFavorite(String mealId);
+  Future<bool> isFavorite(String mealId);
+  Future<List<Meal>> getFavorites();
 }
 
 class RecipeLocalDataSourceImpl implements RecipeLocalDataSource {
@@ -79,6 +82,35 @@ class RecipeLocalDataSourceImpl implements RecipeLocalDataSource {
     final results = await dbQuery.get();
 
     return results.map(_mapToMeal).toList();
+  }
+
+  @override
+  Future<void> toggleFavorite(String mealId) async {
+    final query = _db.select(_db.favorites)..where((t) => t.mealId.equals(mealId));
+    final existing = await query.getSingleOrNull();
+
+    if (existing != null) {
+      await (_db.delete(_db.favorites)..where((t) => t.mealId.equals(mealId))).go();
+    } else {
+      await _db.into(_db.favorites).insert(FavoritesCompanion.insert(mealId: mealId));
+    }
+  }
+
+  @override
+  Future<bool> isFavorite(String mealId) async {
+    final query = _db.select(_db.favorites)..where((t) => t.mealId.equals(mealId));
+    final existing = await query.getSingleOrNull();
+    return existing != null;
+  }
+
+  @override
+  Future<List<Meal>> getFavorites() async {
+    final query = _db.select(_db.meals).join([
+      innerJoin(_db.favorites, _db.favorites.mealId.equalsExp(_db.meals.id)),
+    ]);
+
+    final results = await query.get();
+    return results.map((row) => _mapToMeal(row.readTable(_db.meals))).toList();
   }
 
   Meal _mapToMeal(MealData data) {

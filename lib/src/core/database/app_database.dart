@@ -23,12 +23,31 @@ class Meals extends Table {
   Set<Column> get primaryKey => {id};
 }
 
-@DriftDatabase(tables: [Meals])
+class Favorites extends Table {
+  TextColumn get mealId => text().references(Meals, #id)();
+
+  @override
+  Set<Column> get primaryKey => {mealId};
+}
+
+@DriftDatabase(tables: [Meals, Favorites])
 class AppDatabase extends _$AppDatabase {
   AppDatabase() : super(_openConnection());
 
   @override
-  int get schemaVersion => 1;
+  int get schemaVersion => 2;
+
+  @override
+  MigrationStrategy get migration => MigrationStrategy(
+        onCreate: (m) async {
+          await m.createAll();
+        },
+        onUpgrade: (m, from, to) async {
+          if (from < 2) {
+            await m.createTable(favorites);
+          }
+        },
+      );
 }
 
 LazyDatabase _openConnection() {

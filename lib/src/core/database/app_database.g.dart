@@ -445,15 +445,174 @@ class MealsCompanion extends UpdateCompanion<MealData> {
   }
 }
 
+class $FavoritesTable extends Favorites
+    with TableInfo<$FavoritesTable, Favorite> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $FavoritesTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _mealIdMeta = const VerificationMeta('mealId');
+  @override
+  late final GeneratedColumn<String> mealId = GeneratedColumn<String>(
+      'meal_id', aliasedName, false,
+      type: DriftSqlType.string,
+      requiredDuringInsert: true,
+      defaultConstraints:
+          GeneratedColumn.constraintIsAlways('REFERENCES meals (id)'));
+  @override
+  List<GeneratedColumn> get $columns => [mealId];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'favorites';
+  @override
+  VerificationContext validateIntegrity(Insertable<Favorite> instance,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('meal_id')) {
+      context.handle(_mealIdMeta,
+          mealId.isAcceptableOrUnknown(data['meal_id']!, _mealIdMeta));
+    } else if (isInserting) {
+      context.missing(_mealIdMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {mealId};
+  @override
+  Favorite map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return Favorite(
+      mealId: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}meal_id'])!,
+    );
+  }
+
+  @override
+  $FavoritesTable createAlias(String alias) {
+    return $FavoritesTable(attachedDatabase, alias);
+  }
+}
+
+class Favorite extends DataClass implements Insertable<Favorite> {
+  final String mealId;
+  const Favorite({required this.mealId});
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['meal_id'] = Variable<String>(mealId);
+    return map;
+  }
+
+  FavoritesCompanion toCompanion(bool nullToAbsent) {
+    return FavoritesCompanion(
+      mealId: Value(mealId),
+    );
+  }
+
+  factory Favorite.fromJson(Map<String, dynamic> json,
+      {ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return Favorite(
+      mealId: serializer.fromJson<String>(json['mealId']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'mealId': serializer.toJson<String>(mealId),
+    };
+  }
+
+  Favorite copyWith({String? mealId}) => Favorite(
+        mealId: mealId ?? this.mealId,
+      );
+  Favorite copyWithCompanion(FavoritesCompanion data) {
+    return Favorite(
+      mealId: data.mealId.present ? data.mealId.value : this.mealId,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('Favorite(')
+          ..write('mealId: $mealId')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => mealId.hashCode;
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is Favorite && other.mealId == this.mealId);
+}
+
+class FavoritesCompanion extends UpdateCompanion<Favorite> {
+  final Value<String> mealId;
+  final Value<int> rowid;
+  const FavoritesCompanion({
+    this.mealId = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  FavoritesCompanion.insert({
+    required String mealId,
+    this.rowid = const Value.absent(),
+  }) : mealId = Value(mealId);
+  static Insertable<Favorite> custom({
+    Expression<String>? mealId,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (mealId != null) 'meal_id': mealId,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  FavoritesCompanion copyWith({Value<String>? mealId, Value<int>? rowid}) {
+    return FavoritesCompanion(
+      mealId: mealId ?? this.mealId,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (mealId.present) {
+      map['meal_id'] = Variable<String>(mealId.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('FavoritesCompanion(')
+          ..write('mealId: $mealId, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
   late final $MealsTable meals = $MealsTable(this);
+  late final $FavoritesTable favorites = $FavoritesTable(this);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
   @override
-  List<DatabaseSchemaEntity> get allSchemaEntities => [meals];
+  List<DatabaseSchemaEntity> get allSchemaEntities => [meals, favorites];
 }
 
 typedef $$MealsTableCreateCompanionBuilder = MealsCompanion Function({
@@ -478,6 +637,25 @@ typedef $$MealsTableUpdateCompanionBuilder = MealsCompanion Function({
   Value<DateTime> cachedAt,
   Value<int> rowid,
 });
+
+final class $$MealsTableReferences
+    extends BaseReferences<_$AppDatabase, $MealsTable, MealData> {
+  $$MealsTableReferences(super.$_db, super.$_table, super.$_typedResult);
+
+  static MultiTypedResultKey<$FavoritesTable, List<Favorite>>
+      _favoritesRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
+          db.favorites,
+          aliasName: $_aliasNameGenerator(db.meals.id, db.favorites.mealId));
+
+  $$FavoritesTableProcessedTableManager get favoritesRefs {
+    final manager = $$FavoritesTableTableManager($_db, $_db.favorites)
+        .filter((f) => f.mealId.id($_item.id));
+
+    final cache = $_typedResult.readTableOrNull(_favoritesRefsTable($_db));
+    return ProcessedTableManager(
+        manager.$state.copyWith(prefetchedData: cache));
+  }
+}
 
 class $$MealsTableFilterComposer extends Composer<_$AppDatabase, $MealsTable> {
   $$MealsTableFilterComposer({
@@ -511,6 +689,27 @@ class $$MealsTableFilterComposer extends Composer<_$AppDatabase, $MealsTable> {
 
   ColumnFilters<DateTime> get cachedAt => $composableBuilder(
       column: $table.cachedAt, builder: (column) => ColumnFilters(column));
+
+  Expression<bool> favoritesRefs(
+      Expression<bool> Function($$FavoritesTableFilterComposer f) f) {
+    final $$FavoritesTableFilterComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.id,
+        referencedTable: $db.favorites,
+        getReferencedColumn: (t) => t.mealId,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$FavoritesTableFilterComposer(
+              $db: $db,
+              $table: $db.favorites,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return f(composer);
+  }
 }
 
 class $$MealsTableOrderingComposer
@@ -582,6 +781,27 @@ class $$MealsTableAnnotationComposer
 
   GeneratedColumn<DateTime> get cachedAt =>
       $composableBuilder(column: $table.cachedAt, builder: (column) => column);
+
+  Expression<T> favoritesRefs<T extends Object>(
+      Expression<T> Function($$FavoritesTableAnnotationComposer a) f) {
+    final $$FavoritesTableAnnotationComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.id,
+        referencedTable: $db.favorites,
+        getReferencedColumn: (t) => t.mealId,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$FavoritesTableAnnotationComposer(
+              $db: $db,
+              $table: $db.favorites,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return f(composer);
+  }
 }
 
 class $$MealsTableTableManager extends RootTableManager<
@@ -593,9 +813,9 @@ class $$MealsTableTableManager extends RootTableManager<
     $$MealsTableAnnotationComposer,
     $$MealsTableCreateCompanionBuilder,
     $$MealsTableUpdateCompanionBuilder,
-    (MealData, BaseReferences<_$AppDatabase, $MealsTable, MealData>),
+    (MealData, $$MealsTableReferences),
     MealData,
-    PrefetchHooks Function()> {
+    PrefetchHooks Function({bool favoritesRefs})> {
   $$MealsTableTableManager(_$AppDatabase db, $MealsTable table)
       : super(TableManagerState(
           db: db,
@@ -651,9 +871,31 @@ class $$MealsTableTableManager extends RootTableManager<
             rowid: rowid,
           ),
           withReferenceMapper: (p0) => p0
-              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .map((e) =>
+                  (e.readTable(table), $$MealsTableReferences(db, table, e)))
               .toList(),
-          prefetchHooksCallback: null,
+          prefetchHooksCallback: ({favoritesRefs = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [if (favoritesRefs) db.favorites],
+              addJoins: null,
+              getPrefetchedDataCallback: (items) async {
+                return [
+                  if (favoritesRefs)
+                    await $_getPrefetchedData(
+                        currentTable: table,
+                        referencedTable:
+                            $$MealsTableReferences._favoritesRefsTable(db),
+                        managerFromTypedResult: (p0) =>
+                            $$MealsTableReferences(db, table, p0).favoritesRefs,
+                        referencedItemsForCurrentItem: (item,
+                                referencedItems) =>
+                            referencedItems.where((e) => e.mealId == item.id),
+                        typedResults: items)
+                ];
+              },
+            );
+          },
         ));
 }
 
@@ -666,15 +908,228 @@ typedef $$MealsTableProcessedTableManager = ProcessedTableManager<
     $$MealsTableAnnotationComposer,
     $$MealsTableCreateCompanionBuilder,
     $$MealsTableUpdateCompanionBuilder,
-    (MealData, BaseReferences<_$AppDatabase, $MealsTable, MealData>),
+    (MealData, $$MealsTableReferences),
     MealData,
-    PrefetchHooks Function()>;
+    PrefetchHooks Function({bool favoritesRefs})>;
+typedef $$FavoritesTableCreateCompanionBuilder = FavoritesCompanion Function({
+  required String mealId,
+  Value<int> rowid,
+});
+typedef $$FavoritesTableUpdateCompanionBuilder = FavoritesCompanion Function({
+  Value<String> mealId,
+  Value<int> rowid,
+});
+
+final class $$FavoritesTableReferences
+    extends BaseReferences<_$AppDatabase, $FavoritesTable, Favorite> {
+  $$FavoritesTableReferences(super.$_db, super.$_table, super.$_typedResult);
+
+  static $MealsTable _mealIdTable(_$AppDatabase db) => db.meals
+      .createAlias($_aliasNameGenerator(db.favorites.mealId, db.meals.id));
+
+  $$MealsTableProcessedTableManager? get mealId {
+    if ($_item.mealId == null) return null;
+    final manager = $$MealsTableTableManager($_db, $_db.meals)
+        .filter((f) => f.id($_item.mealId!));
+    final item = $_typedResult.readTableOrNull(_mealIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+        manager.$state.copyWith(prefetchedData: [item]));
+  }
+}
+
+class $$FavoritesTableFilterComposer
+    extends Composer<_$AppDatabase, $FavoritesTable> {
+  $$FavoritesTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  $$MealsTableFilterComposer get mealId {
+    final $$MealsTableFilterComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.mealId,
+        referencedTable: $db.meals,
+        getReferencedColumn: (t) => t.id,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$MealsTableFilterComposer(
+              $db: $db,
+              $table: $db.meals,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return composer;
+  }
+}
+
+class $$FavoritesTableOrderingComposer
+    extends Composer<_$AppDatabase, $FavoritesTable> {
+  $$FavoritesTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  $$MealsTableOrderingComposer get mealId {
+    final $$MealsTableOrderingComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.mealId,
+        referencedTable: $db.meals,
+        getReferencedColumn: (t) => t.id,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$MealsTableOrderingComposer(
+              $db: $db,
+              $table: $db.meals,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return composer;
+  }
+}
+
+class $$FavoritesTableAnnotationComposer
+    extends Composer<_$AppDatabase, $FavoritesTable> {
+  $$FavoritesTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  $$MealsTableAnnotationComposer get mealId {
+    final $$MealsTableAnnotationComposer composer = $composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.mealId,
+        referencedTable: $db.meals,
+        getReferencedColumn: (t) => t.id,
+        builder: (joinBuilder,
+                {$addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer}) =>
+            $$MealsTableAnnotationComposer(
+              $db: $db,
+              $table: $db.meals,
+              $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+              joinBuilder: joinBuilder,
+              $removeJoinBuilderFromRootComposer:
+                  $removeJoinBuilderFromRootComposer,
+            ));
+    return composer;
+  }
+}
+
+class $$FavoritesTableTableManager extends RootTableManager<
+    _$AppDatabase,
+    $FavoritesTable,
+    Favorite,
+    $$FavoritesTableFilterComposer,
+    $$FavoritesTableOrderingComposer,
+    $$FavoritesTableAnnotationComposer,
+    $$FavoritesTableCreateCompanionBuilder,
+    $$FavoritesTableUpdateCompanionBuilder,
+    (Favorite, $$FavoritesTableReferences),
+    Favorite,
+    PrefetchHooks Function({bool mealId})> {
+  $$FavoritesTableTableManager(_$AppDatabase db, $FavoritesTable table)
+      : super(TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$FavoritesTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$FavoritesTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$FavoritesTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback: ({
+            Value<String> mealId = const Value.absent(),
+            Value<int> rowid = const Value.absent(),
+          }) =>
+              FavoritesCompanion(
+            mealId: mealId,
+            rowid: rowid,
+          ),
+          createCompanionCallback: ({
+            required String mealId,
+            Value<int> rowid = const Value.absent(),
+          }) =>
+              FavoritesCompanion.insert(
+            mealId: mealId,
+            rowid: rowid,
+          ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (
+                    e.readTable(table),
+                    $$FavoritesTableReferences(db, table, e)
+                  ))
+              .toList(),
+          prefetchHooksCallback: ({mealId = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [],
+              addJoins: <
+                  T extends TableManagerState<
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic>>(state) {
+                if (mealId) {
+                  state = state.withJoin(
+                    currentTable: table,
+                    currentColumn: table.mealId,
+                    referencedTable:
+                        $$FavoritesTableReferences._mealIdTable(db),
+                    referencedColumn:
+                        $$FavoritesTableReferences._mealIdTable(db).id,
+                  ) as T;
+                }
+
+                return state;
+              },
+              getPrefetchedDataCallback: (items) async {
+                return [];
+              },
+            );
+          },
+        ));
+}
+
+typedef $$FavoritesTableProcessedTableManager = ProcessedTableManager<
+    _$AppDatabase,
+    $FavoritesTable,
+    Favorite,
+    $$FavoritesTableFilterComposer,
+    $$FavoritesTableOrderingComposer,
+    $$FavoritesTableAnnotationComposer,
+    $$FavoritesTableCreateCompanionBuilder,
+    $$FavoritesTableUpdateCompanionBuilder,
+    (Favorite, $$FavoritesTableReferences),
+    Favorite,
+    PrefetchHooks Function({bool mealId})>;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
   $AppDatabaseManager(this._db);
   $$MealsTableTableManager get meals =>
       $$MealsTableTableManager(_db, _db.meals);
+  $$FavoritesTableTableManager get favorites =>
+      $$FavoritesTableTableManager(_db, _db.favorites);
 }
 
 // **************************************************************************
