@@ -4,7 +4,7 @@
 
 - [x] **Phase 1: Foundation & DevOps** - Scaffold project with CI/CD and architecture.
 - [x] **Phase 2: Core Discovery & Search** - Basic API integration, search, and loading states.
-- [ ] **Phase 3: Offline Persistence & Resilience** - Favorites, caching, and offline state management.
+- [x] **Phase 3: Offline Persistence & Resilience** - Favorites, caching, and offline state management.
 - [ ] **Phase 4: Contextual Intelligence** - Time and location-based discovery logic.
 - [ ] **Phase 5: Engagement & Polish** - Notifications and micro-interactions.
 
@@ -47,9 +47,9 @@
   2. Previously viewed recipe data and images load instantly from cache when offline.
   3. App transitions to "Offline Mode" UI (cached/favorites) automatically when the network fails.
 **Plans**: 3 plans
-- [ ] 03-01-PLAN.md — Setup Drift persistence foundation and recipe caching.
-- [ ] 03-02-PLAN.md — Connectivity monitoring and global offline banner.
-- [ ] 03-03-PLAN.md — Implement Favorites feature with toggle UI and dedicated view.
+- [x] 03-01-PLAN.md — Setup Drift persistence foundation and recipe caching.
+- [x] 03-02-PLAN.md — Connectivity monitoring and global offline banner.
+- [x] 03-03-PLAN.md — Implement Favorites feature with toggle UI and dedicated view.
 **UI hint**: yes
 
 ### Phase 4: Contextual Intelligence
@@ -60,7 +60,10 @@
   1. Homepage dynamically suggests categories based on local time (Breakfast/Lunch/Dinner).
   2. Cuisines relevant to the user's current GPS location are prioritized in discovery.
   3. Location permission denials are handled gracefully with fallbacks or informative prompts.
-**Plans**: TBD
+**Plans**: 3 plans
+- [ ] 04-01-PLAN.md — Data Layer Extensions for Area/Category filtering.
+- [ ] 04-02-PLAN.md — Contextual Logic (Time & Location mapping).
+- [ ] 04-03-PLAN.md — Contextual UI & Home Integration.
 **UI hint**: yes
 
 ### Phase 5: Engagement & Polish
@@ -80,6 +83,6 @@
 |-------|----------------|--------|-----------|
 | 1: Foundation & DevOps | 1/1 | Completed | 2026-04-25 |
 | 2: Core Discovery & Search | 5/5 | Completed | 2026-04-25 |
-| 3: Offline Persistence & Resilience | 0/3 | In Progress | - |
-| 4: Contextual Intelligence | 0/1 | Not started | - |
+| 3: Offline Persistence & Resilience | 3/3 | Completed | 2026-04-25 |
+| 4: Contextual Intelligence | 0/3 | In Progress | - |
 | 5: Engagement & Polish | 0/1 | Not started | - |
