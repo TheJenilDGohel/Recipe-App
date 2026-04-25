@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 
 class EmptyState extends StatelessWidget {
-  final String title;
-  final String message;
-  final IconData icon;
-
   const EmptyState({
     super.key,
     this.title = 'No Results',
     this.message = 'Try searching for something else.',
     this.icon = Icons.search_off,
   });
+
+  final String title;
+  final String message;
+  final IconData icon;
 
   @override
   Widget build(BuildContext context) {

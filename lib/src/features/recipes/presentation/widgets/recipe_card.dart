@@ -3,14 +3,14 @@ import 'package:flutter/material.dart';
 import '../../domain/models/meal.dart';
 
 class RecipeCard extends StatelessWidget {
-  final Meal meal;
-  final VoidCallback? onTap;
-
   const RecipeCard({
     super.key,
     required this.meal,
     this.onTap,
   });
+
+  final Meal meal;
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {

@@ -79,9 +79,9 @@ class RecipeListShimmer extends StatelessWidget {
     return ListView.builder(
       padding: const EdgeInsets.all(16),
       itemCount: 5,
-      itemBuilder: (context, index) => const Padding(
+      itemBuilder: (context, index) => Padding(
         padding: const EdgeInsets.only(bottom: 16),
-        child: RecipeCardShimmer(),
+        child: const RecipeCardShimmer(),
       ),
     );
   }
