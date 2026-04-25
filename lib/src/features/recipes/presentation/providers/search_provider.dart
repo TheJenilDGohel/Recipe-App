@@ -1,12 +1,16 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:recipe_app/src/features/recipes/domain/models/meal.dart';
 import 'package:recipe_app/src/features/recipes/data/repositories/recipe_repository_impl.dart';
+import 'package:recipe_app/src/core/network/connectivity_provider.dart';
 import 'dart:async';
 
 part 'search_provider.g.dart';
 
 @riverpod
 Future<List<Meal>> searchRecipes(SearchRecipesRef ref, String query) async {
+  // Watch connectivity status to trigger a re-fetch when connection is restored
+  ref.watch(connectivityStatusProvider);
+
   if (query.isEmpty) {
     return [];
   }
