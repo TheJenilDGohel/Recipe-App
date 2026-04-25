@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:recipe_app/src/core/widgets/offline_banner.dart';
 import 'package:recipe_app/src/features/recipes/presentation/screens/home_screen.dart';
 
 void main() {
@@ -21,6 +22,14 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.orange),
         useMaterial3: true,
       ),
+      builder: (context, child) {
+        return Column(
+          children: [
+            const OfflineBanner(),
+            Expanded(child: child!),
+          ],
+        );
+      },
       home: const HomeScreen(),
     );
   }
