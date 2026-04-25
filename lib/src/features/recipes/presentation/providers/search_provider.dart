@@ -11,23 +11,18 @@ Future<List<Meal>> searchRecipes(SearchRecipesRef ref, String query) async {
     return [];
   }
 
-  // Debouncing logic
-  ref.keepAlive();
-  Timer? timer;
-
-  ref.onDispose(() {
-    timer?.cancel();
-  });
-
-  // Create a completer to handle the async result after debounce
+  // Use a Completer to handle the delayed result
   final completer = Completer<List<Meal>>();
 
-  // Capture the repository before the timer
-  final repository = ref.read(recipeRepositoryProvider);
-
-  timer = Timer(const Duration(milliseconds: 500), () async {
+  // Create a timer for debouncing
+  final timer = Timer(const Duration(milliseconds: 500), () async {
     try {
+      final repository = ref.read(recipeRepositoryProvider);
       final results = await repository.searchMeals(query);
+
+      // Only keep alive after a successful fetch
+      ref.keepAlive();
+
       if (!completer.isCompleted) {
         completer.complete(results);
       }
@@ -36,6 +31,11 @@ Future<List<Meal>> searchRecipes(SearchRecipesRef ref, String query) async {
         completer.completeError(e, st);
       }
     }
+  });
+
+  // Important: cancel the timer if the provider is disposed (e.g., query changed)
+  ref.onDispose(() {
+    timer.cancel();
   });
 
   return completer.future;
