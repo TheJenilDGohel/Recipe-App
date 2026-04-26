@@ -6,7 +6,8 @@
 - [x] **Phase 2: Core Discovery & Search** - Basic API integration, search, and loading states.
 - [x] **Phase 3: Offline Persistence & Resilience** - Favorites, caching, and offline state management.
 - [x] **Phase 4: Contextual Intelligence** - Time and location-based discovery logic.
-- [ ] **Phase 5: Engagement & Polish** - Notifications and micro-interactions.
+- [x] **Phase 5: Engagement & Polish** - Notifications and micro-interactions.
+- [ ] **Phase 6: UI Refinement & Reference Alignment** - Overhaul UI to match modern aesthetic reference.
 
 ## Phase Details
 
@@ -75,9 +76,21 @@
   2. The "Favorite" heart icon has a smooth implicit animation on state change.
   3. Hero transitions provide seamless visual continuity between the list and detail screens.
 **Plans**: 3 plans
-- [ ] 05-01-PLAN.md — Notification Infrastructure & Permissions.
-- [ ] 05-02-PLAN.md — Meal-Time Engagement Logic.
-- [ ] 05-03-PLAN.md — Visual Continuity & Micro-interactions.
+- [x] 05-01-PLAN.md — Notification Infrastructure & Permissions.
+- [x] 05-02-PLAN.md — Meal-Time Engagement Logic.
+- [x] 05-03-PLAN.md — Visual Continuity & Micro-interactions.
+**UI hint**: yes
+
+### Phase 6: UI Refinement & Reference Alignment
+**Goal**: Achieve a high-fidelity, modern UI that aligns with provided aesthetic references.
+**Depends on**: Phase 5
+**Requirements**: TECH-03, UI-REF-01
+**Success Criteria**:
+  1. The app's visual language (typography, colors, spacing) matches the reference image.
+  2. Card layouts are refined for modern aesthetics (soft shadows, corner radii, optical alignment).
+  3. The overall "feel" of the app is elevated from "okaiesh" to production-grade polish.
+**Plans**: 1 plan
+- [ ] 06-01-PLAN.md — Global visual overhaul (Theme, Cards, Screens).
 **UI hint**: yes
 
 ## Progress Table
@@ -88,4 +101,5 @@
 | 2: Core Discovery & Search | 5/5 | Completed | 2026-04-25 |
 | 3: Offline Persistence & Resilience | 3/3 | Completed | 2026-04-25 |
 | 4: Contextual Intelligence | 3/3 | Completed | 2026-04-26 |
-| 5: Engagement & Polish | 0/3 | In Progress | - |
+| 5: Engagement & Polish | 3/3 | Completed | 2026-04-26 |
+| 6: UI Refinement | 0/1 | In Progress | - |
