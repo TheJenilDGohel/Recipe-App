@@ -7,90 +7,27 @@
 - [x] **Phase 3: Offline Persistence & Resilience** - Favorites, caching, and offline state management.
 - [x] **Phase 4: Contextual Intelligence** - Time and location-based discovery logic.
 - [x] **Phase 5: Engagement & Polish** - Notifications and micro-interactions.
-- [ ] **Phase 6: UI Refinement & Reference Alignment** - Overhaul UI to match modern aesthetic reference.
+- [x] **Phase 6: UI Refinement & Reference Alignment** - Overhaul UI to match modern aesthetic reference.
+- [ ] **Phase 7: Comprehensive E2E Testing** - Automated UI and flow verification using OpenMob.
 
 ## Phase Details
 
 ### Phase 1: Foundation & DevOps
-**Goal**: Establish the production-grade foundation and automated delivery pipeline.
-**Depends on**: Nothing
-**Requirements**: OPS-01, OPS-02, TECH-01
-**Success Criteria**:
-  1. GitHub Actions successfully runs analysis and tests on every push.
-  2. A Release APK is automatically generated and uploaded to GitHub Releases.
-  3. The chosen state management (Bloc/Riverpod/MobX) is configured and providing state to a root-level widget.
-**Plans**:
-- [x] 01-01-PLAN.md — Initialize project, architecture, and CI/CD pipeline.
+...
+- [x] 06-01-PLAN.md — UI Overhaul & Reference Alignment.
 
-### Phase 2: Core Discovery & Search
-**Goal**: Enable users to discover and search for recipes with high perceived performance.
-**Depends on**: Phase 1
-**Requirements**: SMART-01, SMART-04, TECH-02, TECH-04
+### Phase 7: Comprehensive E2E Testing
+**Goal**: Verify the entire app functionality on the OnePlus physical device (192.168.0.102:40601).
+**Depends on**: Phase 6
+**Requirements**: TECH-04, QA-01
 **Success Criteria**:
-  1. User can search for recipes with debounced API calls (optimized overhead).
-  2. Shimmer/Skeleton loaders appear during all asynchronous data fetches.
-  3. A global error UI (Snackbars or empty states) handles network failures gracefully.
-  4. Recipe list and detail views are functional with real data from TheMealDB.
-**Plans**:
-- [x] 02-01-PLAN.md — API & Data Foundation (Models, Data Sources, Repositories).
-- [x] 02-02-PLAN.md — Search & Home UI (Debounced search providers and list).
-- [x] 02-03-PLAN.md — Detail View & Polish (Recipe details, Shimmers, Global Error UI).
-- [x] 02-04-PLAN.md — Gap Closure: Fix compilation blockers in ErrorView and DetailScreen.
-- [x] 02-05-PLAN.md — Gap Closure: Fix flawed search debouncing logic.
-**UI hint**: yes
-
-### Phase 3: Offline Persistence & Resilience
-**Goal**: Ensure the app remains functional and useful without an internet connection.
-**Depends on**: Phase 2
-**Requirements**: OFF-01, OFF-02, OFF-03
-**Success Criteria**:
-  1. User can "Favorite" recipes, persisting them to local storage.
-  2. Previously viewed recipe data and images load instantly from cache when offline.
-  3. App transitions to "Offline Mode" UI (cached/favorites) automatically when the network fails.
-**Plans**: 3 plans
-- [x] 03-01-PLAN.md — Setup Drift persistence foundation and recipe caching.
-- [x] 03-02-PLAN.md — Connectivity monitoring and global offline banner.
-- [x] 03-03-PLAN.md — Implement Favorites feature with toggle UI and dedicated view.
-**UI hint**: yes
-
-### Phase 4: Contextual Intelligence
-**Goal**: Automate discovery by tailoring content to the user's time and location.
-**Depends on**: Phase 2
-**Requirements**: SMART-02, SMART-03, ENG-02
-**Success Criteria**:
-  1. Homepage dynamically suggests categories based on local time (Breakfast/Lunch/Dinner).
-  2. Cuisines relevant to the user's current GPS location are prioritized in discovery.
-  3. Location permission denials are handled gracefully with fallbacks or informative prompts.
-**Plans**: 3 plans
-- [x] 04-01-PLAN.md — Data Layer Extensions for Area/Category filtering.
-- [x] 04-02-PLAN.md — Contextual Logic (Time & Location mapping).
-- [x] 04-03-PLAN.md — Contextual UI & Home Integration.
-**UI hint**: yes
-
-### Phase 5: Engagement & Polish
-**Goal**: Increase user retention through proactive triggers and high-quality interactions.
-**Depends on**: Phase 4
-**Requirements**: ENG-01, TECH-03
-**Success Criteria**:
-  1. Scheduled notifications trigger at meal times (e.g., 8:00 AM) with recipe suggestions.
-  2. The "Favorite" heart icon has a smooth implicit animation on state change.
-  3. Hero transitions provide seamless visual continuity between the list and detail screens.
-**Plans**: 3 plans
-- [x] 05-01-PLAN.md — Notification Infrastructure & Permissions.
-- [x] 05-02-PLAN.md — Meal-Time Engagement Logic.
-- [x] 05-03-PLAN.md — Visual Continuity & Micro-interactions.
-**UI hint**: yes
-
-### Phase 6: UI Refinement & Reference Alignment
-**Goal**: Achieve a high-fidelity, modern UI that aligns with provided aesthetic references.
-**Depends on**: Phase 5
-**Requirements**: TECH-03, UI-REF-01
-**Success Criteria**:
-  1. The app's visual language (typography, colors, spacing) matches the reference image.
-  2. Card layouts are refined for modern aesthetics (soft shadows, corner radii, optical alignment).
-  3. The overall "feel" of the app is elevated from "okaiesh" to production-grade polish.
+  1. App launches and displays the "Discover" home screen.
+  2. Search functionality works and returns relevant results.
+  3. Recipe details can be opened and displayed correctly.
+  4. Recipes can be favorited and viewed in the favorites screen.
+  5. Contextual Carousel displays recipes correctly with dynamic subtitle.
 **Plans**: 1 plan
-- [ ] 06-01-PLAN.md — Global visual overhaul (Theme, Cards, Screens).
+- [ ] 07-01-PLAN.md — Comprehensive E2E UI Verification Flow.
 **UI hint**: yes
 
 ## Progress Table
@@ -102,4 +39,5 @@
 | 3: Offline Persistence & Resilience | 3/3 | Completed | 2026-04-25 |
 | 4: Contextual Intelligence | 3/3 | Completed | 2026-04-26 |
 | 5: Engagement & Polish | 3/3 | Completed | 2026-04-26 |
-| 6: UI Refinement | 0/1 | In Progress | - |
+| 6: UI Refinement | 1/1 | Completed | 2026-04-26 |
+| 7: E2E Testing | 0/1 | Planned | - |
