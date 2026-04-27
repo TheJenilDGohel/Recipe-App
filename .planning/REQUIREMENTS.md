@@ -37,14 +37,14 @@
 | SMART-02 | Phase 4 | Complete |
 | SMART-03 | Phase 4 | Complete |
 | SMART-04 | Phase 2 | Complete |
-| OFF-01 | Phase 3 | Pending |
-| OFF-02 | Phase 3 | Pending |
-| OFF-03 | Phase 3 | Pending |
-| ENG-01 | Phase 5 | Pending |
-| ENG-02 | Phase 4 | Pending |
-| TECH-01 | Phase 1 | Pending |
-| TECH-02 | Phase 2 | Pending |
-| TECH-03 | Phase 5 | Pending |
-| TECH-04 | Phase 2 | Complete |
-| OPS-01 | Phase 1 | Pending |
-| OPS-02 | Phase 1 | Pending |
+| OFF-01 | Phase 3 | Complete |
+| OFF-02 | Phase 3 | Complete |
+| OFF-03 | Phase 3, 8 | Complete |
+| ENG-01 | Phase 5 | Complete |
+| ENG-02 | Phase 4, 8 | Complete |
+| TECH-01 | Phase 1, 10 | Pending |
+| TECH-02 | Phase 2, 6 | Complete |
+| TECH-03 | Phase 5, 6 | Complete |
+| TECH-04 | Phase 2, 8, 9 | Complete |
+| OPS-01 | Phase 1, 7 | Pending |
+| OPS-02 | Phase 1 | Complete |
