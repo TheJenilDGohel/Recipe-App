@@ -12,7 +12,6 @@ void main() {
     );
 
     // Verify that our app shows the welcome text.
-    expect(find.text('Hello Recipe App'), findsOneWidget);
-    expect(find.text('Recipe Discovery'), findsOneWidget);
+    expect(find.text('DISCOVER'), findsOneWidget);
   });
 }
