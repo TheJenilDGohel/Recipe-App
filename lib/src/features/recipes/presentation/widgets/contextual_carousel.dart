@@ -61,12 +61,17 @@ class ContextualCarousel extends ConsumerWidget {
               itemCount: meals.length,
               itemBuilder: (context, index) {
                 final meal = meals[index];
+                final heroTag = 'meal-${meal.id}-carousel';
                 return MiniRecipeCard(
                   meal: meal,
+                  heroTag: heroTag,
                   onTap: () {
                     Navigator.of(context).push(
                       MaterialPageRoute(
-                        builder: (context) => RecipeDetailScreen(mealId: meal.id),
+                        builder: (context) => RecipeDetailScreen(
+                          mealId: meal.id,
+                          heroTag: heroTag,
+                        ),
                       ),
                     );
                   },

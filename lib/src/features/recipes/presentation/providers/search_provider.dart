@@ -1,48 +1,49 @@
+import 'dart:async';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:recipe_app/src/features/recipes/domain/models/meal.dart';
 import 'package:recipe_app/src/features/recipes/data/repositories/recipe_repository_impl.dart';
-import 'package:recipe_app/src/core/network/connectivity_provider.dart';
-import 'dart:async';
+import 'favorites_provider.dart';
 
 part 'search_provider.g.dart';
 
 @riverpod
 Future<List<Meal>> searchRecipes(SearchRecipesRef ref, String query) async {
-  // Watch connectivity status to trigger a re-fetch when connection is restored
-  ref.watch(connectivityStatusProvider);
-
   if (query.isEmpty) {
+    // If query is empty, the home screen shows the carousel + inspiration state.
     return [];
   }
 
-  // Use a Completer to handle the delayed result
-  final completer = Completer<List<Meal>>();
-
-  // Create a timer for debouncing
-  final timer = Timer(const Duration(milliseconds: 500), () async {
-    try {
-      final repository = ref.read(recipeRepositoryProvider);
-      final results = await repository.searchMeals(query);
-
-      // Only keep alive after a successful fetch
-      ref.keepAlive();
-
-      if (!completer.isCompleted) {
-        completer.complete(results);
-      }
-    } catch (e, st) {
-      if (!completer.isCompleted) {
-        completer.completeError(e, st);
-      }
+  try {
+    // Use the optimized search logic with debouncing.
+    // Fixed: Pass query to the provider
+    return await ref.watch(debouncedSearchProvider(query).future);
+  } catch (_) {
+    // STATE RESILIENCE: If network fails during search, try to find matching meals in favorites
+    final favorites = ref.read(favoritesProvider).value ?? [];
+    final matchingFavorites = favorites
+        .where((m) => m.name.toLowerCase().contains(query.toLowerCase()) || 
+                      m.category.toLowerCase().contains(query.toLowerCase()))
+        .toList();
+        
+    if (matchingFavorites.isNotEmpty) {
+      return matchingFavorites;
     }
-  });
+    
+    // Rethrow to let the UI handle the error (ErrorView)
+    rethrow;
+  }
+}
 
-  // Important: cancel the timer if the provider is disposed (e.g., query changed)
-  ref.onDispose(() {
-    timer.cancel();
-  });
+@riverpod
+Future<List<Meal>> debouncedSearch(DebouncedSearchRef ref, String query) async {
+  // Wait for debounce period
+  await Future.delayed(const Duration(milliseconds: 500));
 
-  return completer.future;
+  // If the provider is disposed during the delay (e.g. query changed), 
+  // the execution will stop here because the future will be cancelled by Riverpod.
+  
+  final repo = ref.watch(recipeRepositoryProvider);
+  return await repo.searchMeals(query);
 }
 
 @riverpod

@@ -155,7 +155,7 @@ class _IsFavoriteProviderElement extends AutoDisposeProviderElement<bool>
   String get mealId => (origin as IsFavoriteProvider).mealId;
 }
 
-String _$favoritesHash() => r'2c544a448511b8cdc5ed08b71d763dead8f63646';
+String _$favoritesHash() => r'b83d56a384d4fe81751de1ee5d0390669b8e82cc';
 
 /// See also [Favorites].
 @ProviderFor(Favorites)

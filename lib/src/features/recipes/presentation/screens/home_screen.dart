@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:recipe_app/src/core/services/notification_service.dart';
 import 'package:recipe_app/src/core/widgets/empty_state.dart';
 import 'package:recipe_app/src/core/widgets/error_view.dart';
 import 'package:recipe_app/src/features/recipes/presentation/providers/contextual_discovery_provider.dart';
@@ -23,7 +24,20 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   @override
   void initState() {
     super.initState();
-    _checkLocationPermission();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _checkLocationPermission();
+      _scheduleReminders();
+    });
+  }
+
+  Future<void> _scheduleReminders() async {
+    final service = ref.read(notificationServiceProvider);
+    final granted = await service.requestPermissions();
+    if (granted) {
+      await service.scheduleMealReminders();
+    } else {
+      _showNotificationDeniedDialog();
+    }
   }
 
   Future<void> _checkLocationPermission() async {
@@ -39,15 +53,58 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     if (permission == LocationPermission.denied) {
       permission = await Geolocator.requestPermission();
       if (permission == LocationPermission.denied || permission == LocationPermission.deniedForever) {
+        _showLocationDeniedDialog();
         return;
       }
     }
     
-    // If permission granted, refresh the contextual discovery
+    if (permission == LocationPermission.deniedForever) {
+      _showLocationDeniedDialog();
+      return;
+    }
+    
     if (permission == LocationPermission.whileInUse || permission == LocationPermission.always) {
       ref.invalidate(contextualDiscoveryProvider);
       ref.invalidate(contextualDiscoverySubtitleProvider);
     }
+  }
+
+  void _showLocationDeniedDialog() {
+    if (!mounted) return;
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Personalize Your Recipes'),
+        content: const Text('Enable location to discover popular cuisines in your region. You can always change this later in settings.'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('Not Now'),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              Geolocator.openAppSettings();
+              Navigator.of(context).pop();
+            },
+            child: const Text('Open Settings'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showNotificationDeniedDialog() {
+    if (!mounted) return;
+    // Show a subtle snackbar or non-intrusive dialog for notifications
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: const Text('Enable notifications for meal-time recipe ideas!'),
+        action: SnackBarAction(
+          label: 'Settings',
+          onPressed: () => Geolocator.openAppSettings(), // General settings
+        ),
+      ),
+    );
   }
 
   @override
@@ -57,18 +114,20 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Recipe Discovery'),
-        centerTitle: true,
+        title: const Text('DISCOVER'),
         actions: [
-          IconButton(
-            icon: const Icon(Icons.favorite),
-            onPressed: () {
-              Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (context) => const FavoritesScreen(),
-                ),
-              );
-            },
+          Padding(
+            padding: const EdgeInsets.only(right: 8.0),
+            child: IconButton(
+              icon: const Icon(Icons.favorite_outline_rounded),
+              onPressed: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => const FavoritesScreen(),
+                  ),
+                );
+              },
+            ),
           ),
         ],
       ),
@@ -82,26 +141,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   return EmptyState(
                     title: 'No Recipes Found',
                     message: 'No recipes found for "$searchQuery". Try another search.',
-                    icon: Icons.search_off,
-                  );
-                }
-
-                if (meals.isEmpty && searchQuery.isEmpty) {
-                  return ListView(
-                    padding: const EdgeInsets.only(top: 16, bottom: 16),
-                    children: [
-                      const ContextualCarousel(),
-                      EmptyState(
-                        title: 'Search Recipes',
-                        message: 'Start searching for delicious recipes!',
-                        icon: Icons.search,
-                      ),
-                    ],
+                    icon: Icons.search_off_rounded,
                   );
                 }
 
                 return ListView.builder(
-                  padding: const EdgeInsets.only(top: 16, bottom: 16),
+                  padding: const EdgeInsets.only(bottom: 24),
                   itemCount: meals.length + (searchQuery.isEmpty ? 1 : 0),
                   itemBuilder: (context, index) {
                     if (searchQuery.isEmpty && index == 0) {
@@ -110,15 +155,20 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
                     final mealIndex = searchQuery.isEmpty ? index - 1 : index;
                     final meal = meals[mealIndex];
+                    final heroTag = 'meal-${meal.id}-home';
 
                     return Padding(
-                      padding: const EdgeInsets.only(bottom: 16, left: 16, right: 16),
+                      padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
                       child: RecipeCard(
                         meal: meal,
+                        heroTag: heroTag,
                         onTap: () {
                           Navigator.of(context).push(
                             MaterialPageRoute(
-                              builder: (context) => RecipeDetailScreen(mealId: meal.id),
+                              builder: (context) => RecipeDetailScreen(
+                                mealId: meal.id,
+                                heroTag: heroTag,
+                              ),
                             ),
                           );
                         },

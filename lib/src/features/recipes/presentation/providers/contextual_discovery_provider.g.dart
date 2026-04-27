@@ -21,7 +21,7 @@ final currentTimeProvider = AutoDisposeProvider<DateTime>.internal(
 
 typedef CurrentTimeRef = AutoDisposeProviderRef<DateTime>;
 String _$contextualDiscoveryHash() =>
-    r'ba06d4bb46bb8132d703b11e021d67d365da4396';
+    r'e400076b142fabc2d2adfc06e725ebed9adb0e00';
 
 /// See also [contextualDiscovery].
 @ProviderFor(contextualDiscovery)
@@ -38,7 +38,7 @@ final contextualDiscoveryProvider =
 
 typedef ContextualDiscoveryRef = AutoDisposeFutureProviderRef<List<Meal>>;
 String _$contextualDiscoveryTitleHash() =>
-    r'7ffbd32dbcc36516ad727d248e900467d9e7a869';
+    r'd3ffc85a8ee781f15cdf26d7f3340a1fbb3779ab';
 
 /// See also [contextualDiscoveryTitle].
 @ProviderFor(contextualDiscoveryTitle)

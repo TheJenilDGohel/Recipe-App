@@ -12,9 +12,22 @@ DateTime currentTime(CurrentTimeRef ref) {
 
 String _getCategoryForTime(DateTime time) {
   final hour = time.hour;
-  if (hour >= 6 && hour <= 10) return 'Breakfast';
-  if (hour >= 11 && hour <= 14) return 'Pasta';
-  if (hour >= 17 && hour <= 21) return 'Beef';
+  // Breakfast: 5 AM - 10 AM
+  if (hour >= 5 && hour <= 10) return 'Breakfast';
+  
+  // Lunch: 11 AM - 3 PM
+  if (hour >= 11 && hour <= 15) {
+    final categories = ['Pasta', 'Seafood', 'Vegetarian', 'Chicken'];
+    return categories[time.minute % categories.length];
+  }
+  
+  // Dinner: 4 PM - 9 PM
+  if (hour >= 16 && hour <= 21) {
+    final categories = ['Beef', 'Lamb', 'Pork', 'Side', 'Vegetarian'];
+    return categories[time.minute % categories.length];
+  }
+  
+  // Late Night / Early Morning
   return 'Dessert';
 }
 
@@ -22,15 +35,31 @@ String? _getAreaForCountry(String country) {
   final map = {
     'United States': 'American',
     'United Kingdom': 'British',
-    'Canada': 'British',
+    'Canada': 'Canadian',
     'India': 'Indian',
     'China': 'Chinese',
-    'Japan': 'Chinese',
+    'Japan': 'Japanese',
     'Italy': 'Italian',
     'Mexico': 'Mexican',
-    'France': 'Italian', // Simplified fallback
+    'France': 'French',
     'Spain': 'Spanish',
     'Thailand': 'Thai',
+    'Vietnam': 'Vietnamese',
+    'Malaysia': 'Malaysian',
+    'Morocco': 'Moroccan',
+    'Greece': 'Greek',
+    'Philippines': 'Filipino',
+    'Egypt': 'Egyptian',
+    'Russia': 'Russian',
+    'Poland': 'Polish',
+    'Portugal': 'Portuguese',
+    'Ireland': 'Irish',
+    'Jamaica': 'Jamaican',
+    'Kenya': 'Kenyan',
+    'Croatia': 'Croatian',
+    'Netherlands': 'Dutch',
+    'Tunisia': 'Tunisian',
+    'Turkey': 'Turkish',
   };
   return map[country];
 }
@@ -42,18 +71,22 @@ Future<List<Meal>> contextualDiscovery(ContextualDiscoveryRef ref) async {
   final time = ref.watch(currentTimeProvider);
 
   try {
+    // Attempt location-based first
     final pos = await locationService.getCurrentPosition();
     if (pos != null) {
       final country = await locationService.getCountryFromPosition(pos);
       if (country != null) {
         final area = _getAreaForCountry(country);
         if (area != null) {
-          return await repo.filterByArea(area);
+          final localMeals = await repo.filterByArea(area);
+          if (localMeals.isNotEmpty) {
+            return localMeals;
+          }
         }
       }
     }
   } catch (_) {
-    // Fallback to time-based on error
+    // Graceful fallback to time-based on any location error or denial
   }
 
   // Fallback to time-based discovery
@@ -65,9 +98,9 @@ Future<List<Meal>> contextualDiscovery(ContextualDiscoveryRef ref) async {
 Future<String> contextualDiscoveryTitle(ContextualDiscoveryTitleRef ref) async {
   final time = ref.watch(currentTimeProvider);
   final hour = time.hour;
-  if (hour >= 6 && hour <= 10) return 'Good Morning!';
-  if (hour >= 11 && hour <= 14) return 'Time for Lunch';
-  if (hour >= 17 && hour <= 21) return 'Dinner Ideas';
+  if (hour >= 5 && hour <= 10) return 'Good Morning!';
+  if (hour >= 11 && hour <= 15) return 'Time for Lunch';
+  if (hour >= 16 && hour <= 21) return 'Dinner Ideas';
   return 'Late Night Cravings';
 }
 
@@ -83,7 +116,7 @@ Future<String> contextualDiscoverySubtitle(ContextualDiscoverySubtitleRef ref) a
       }
     }
   } catch (_) {
-    // Ignore error
+    // Ignore error, fallback to global
   }
   return 'Trending Globally';
 }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:recipe_app/src/core/widgets/empty_state.dart';
+import 'package:recipe_app/src/core/widgets/error_view.dart';
 import 'package:recipe_app/src/features/recipes/presentation/providers/favorites_provider.dart';
 import 'package:recipe_app/src/features/recipes/presentation/widgets/recipe_card.dart';
 import 'recipe_detail_screen.dart';
@@ -35,14 +36,19 @@ class FavoritesScreen extends ConsumerWidget {
             itemCount: meals.length,
             itemBuilder: (context, index) {
               final meal = meals[index];
+              final heroTag = 'meal-${meal.id}-favorites';
               return Padding(
                 padding: const EdgeInsets.only(bottom: 16),
                 child: RecipeCard(
                   meal: meal,
+                  heroTag: heroTag,
                   onTap: () {
                     Navigator.of(context).push(
                       MaterialPageRoute(
-                        builder: (context) => RecipeDetailScreen(mealId: meal.id),
+                        builder: (context) => RecipeDetailScreen(
+                          mealId: meal.id,
+                          heroTag: heroTag,
+                        ),
                       ),
                     );
                   },
@@ -52,7 +58,10 @@ class FavoritesScreen extends ConsumerWidget {
           );
         },
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (error, stack) => Center(child: Text('Error: $error')),
+        error: (error, stack) => ErrorView(
+          message: error.toString(),
+          onRetry: () => ref.refresh(favoritesProvider),
+        ),
       ),
     );
   }

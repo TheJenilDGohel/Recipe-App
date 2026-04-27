@@ -1,54 +1,41 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:recipe_app/src/features/recipes/presentation/providers/search_provider.dart';
+import '../providers/search_provider.dart';
 
-class RecipeSearchBar extends ConsumerStatefulWidget {
+class RecipeSearchBar extends ConsumerWidget {
   const RecipeSearchBar({super.key});
 
   @override
-  ConsumerState<RecipeSearchBar> createState() => _RecipeSearchBarState();
-}
-
-class _RecipeSearchBarState extends ConsumerState<RecipeSearchBar> {
-  late final TextEditingController _controller;
-
-  @override
-  void initState() {
-    super.initState();
-    _controller = TextEditingController();
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: TextField(
-        controller: _controller,
-        decoration: InputDecoration(
-          hintText: 'Search for recipes...',
-          prefixIcon: const Icon(Icons.search),
-          suffixIcon: IconButton(
-            icon: const Icon(Icons.clear),
-            onPressed: () {
-              _controller.clear();
-              ref.read(searchQueryProvider.notifier).update('');
-            },
-          ),
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(30),
-          ),
-          filled: true,
-          fillColor: Theme.of(context).colorScheme.surfaceContainerHighest,
+      padding: const EdgeInsets.fromLTRB(20, 10, 20, 24),
+      child: Container(
+        decoration: BoxDecoration(
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.04),
+              blurRadius: 15,
+              offset: const Offset(0, 5),
+            ),
+          ],
         ),
-        onChanged: (value) {
-          ref.read(searchQueryProvider.notifier).update(value);
-        },
+        child: TextField(
+          onChanged: (value) {
+            ref.read(searchQueryProvider.notifier).update(value);
+          },
+          decoration: InputDecoration(
+            hintText: 'Search for ingredients or recipes...',
+            prefixIcon: const Icon(Icons.search_rounded, color: Color(0xFF2D3142)),
+            suffixIcon: ref.watch(searchQueryProvider).isNotEmpty
+                ? IconButton(
+                    icon: const Icon(Icons.clear_rounded, size: 20),
+                    onPressed: () {
+                      ref.read(searchQueryProvider.notifier).update('');
+                    },
+                  )
+                : null,
+          ),
+        ),
       ),
     );
   }

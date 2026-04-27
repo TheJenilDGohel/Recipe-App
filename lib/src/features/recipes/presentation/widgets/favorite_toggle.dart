@@ -27,13 +27,13 @@ class _FavoriteToggleState extends ConsumerState<FavoriteToggle>
   void initState() {
     super.initState();
     _controller = AnimationController(
-      duration: const Duration(milliseconds: 200),
+      duration: const Duration(milliseconds: 300),
       vsync: this,
     );
     _scaleAnimation = TweenSequence<double>([
-      TweenSequenceItem(tween: Tween(begin: 1.0, end: 1.3), weight: 50),
-      TweenSequenceItem(tween: Tween(begin: 1.3, end: 1.0), weight: 50),
-    ]).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
+      TweenSequenceItem(tween: Tween(begin: 1.0, end: 1.4), weight: 50),
+      TweenSequenceItem(tween: Tween(begin: 1.4, end: 1.0), weight: 50),
+    ]).animate(CurvedAnimation(parent: _controller, curve: Curves.elasticOut));
   }
 
   @override
@@ -59,10 +59,17 @@ class _FavoriteToggleState extends ConsumerState<FavoriteToggle>
         padding: const EdgeInsets.all(8.0),
         child: ScaleTransition(
           scale: _scaleAnimation,
-          child: Icon(
-            isFav ? Icons.favorite : Icons.favorite_border,
-            color: isFav ? const Color(0xFF7C3AED) : Colors.grey,
-            size: widget.size,
+          child: AnimatedSwitcher(
+            duration: const Duration(milliseconds: 200),
+            transitionBuilder: (Widget child, Animation<double> animation) {
+              return ScaleTransition(scale: animation, child: child);
+            },
+            child: Icon(
+              isFav ? Icons.favorite : Icons.favorite_border,
+              key: ValueKey<bool>(isFav),
+              color: isFav ? Colors.red : Colors.grey,
+              size: widget.size,
+            ),
           ),
         ),
       ),

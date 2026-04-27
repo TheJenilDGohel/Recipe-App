@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:recipe_app/src/core/widgets/error_view.dart';
+import 'package:recipe_app/src/features/recipes/domain/models/meal.dart';
 import '../providers/recipe_details_provider.dart';
 import '../widgets/recipe_shimmer.dart';
 import '../widgets/favorite_toggle.dart';
@@ -10,9 +11,11 @@ class RecipeDetailScreen extends ConsumerWidget {
   const RecipeDetailScreen({
     super.key,
     required this.mealId,
+    this.heroTag,
   });
 
   final String mealId;
+  final String? heroTag;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -28,28 +31,41 @@ class RecipeDetailScreen extends ConsumerWidget {
             );
           }
 
+          final effectiveHeroTag = heroTag ?? 'meal-${meal.id}';
+
           return CustomScrollView(
             slivers: [
               SliverAppBar(
-                expandedHeight: 300,
+                expandedHeight: 380,
                 pinned: true,
-                actions: [
-                  CircleAvatar(
-                    backgroundColor: Colors.white.withOpacity(0.7),
-                    child: FavoriteToggle(meal: meal),
-                  ),
-                  const SizedBox(width: 8),
-                ],
-                flexibleSpace: FlexibleSpaceBar(
-                  title: Text(
-                    meal.name,
-                    style: const TextStyle(
-                      color: Colors.white,
-                      shadows: [Shadow(blurRadius: 10, color: Colors.black)],
+                stretch: true,
+                backgroundColor: Colors.white,
+                leading: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: CircleAvatar(
+                    backgroundColor: Colors.white,
+                    child: IconButton(
+                      icon: const Icon(Icons.arrow_back_rounded, color: Color(0xFF2D3142)),
+                      onPressed: () => Navigator.of(context).pop(),
                     ),
                   ),
+                ),
+                actions: [
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: CircleAvatar(
+                      backgroundColor: Colors.white,
+                      child: FavoriteToggle(meal: meal),
+                    ),
+                  ),
+                ],
+                flexibleSpace: FlexibleSpaceBar(
+                  stretchModes: const [
+                    StretchMode.zoomBackground,
+                    StretchMode.blurBackground,
+                  ],
                   background: Hero(
-                    tag: 'meal-${meal.id}',
+                    tag: effectiveHeroTag,
                     child: CachedNetworkImage(
                       imageUrl: meal.thumbnailUrl,
                       fit: BoxFit.cover,
@@ -57,56 +73,41 @@ class RecipeDetailScreen extends ConsumerWidget {
                   ),
                 ),
               ),
-              SliverPadding(
-                padding: const EdgeInsets.all(16.0),
-                sliver: SliverList(
-                  delegate: SliverChildListDelegate([
-                    Row(
+              SliverToBoxAdapter(
+                child: Container(
+                  decoration: const BoxDecoration(
+                    color: Color(0xFFFAFAFA),
+                    borderRadius: BorderRadius.vertical(top: Radius.circular(32)),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(24.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Chip(label: Text(meal.category)),
-                        const SizedBox(width: 8),
-                        Chip(label: Text(meal.area)),
+                        Text(
+                          meal.name,
+                          style: Theme.of(context).textTheme.displayLarge?.copyWith(fontSize: 28),
+                        ),
+                        const SizedBox(height: 12),
+                        Row(
+                          children: [
+                            _buildTag(context, meal.category),
+                            const SizedBox(width: 12),
+                            _buildTag(context, meal.area, isSecondary: true),
+                          ],
+                        ),
+                        const SizedBox(height: 32),
+                        _buildSectionTitle(context, 'Ingredients'),
+                        const SizedBox(height: 16),
+                        _buildIngredientsList(context, meal),
+                        const SizedBox(height: 32),
+                        _buildSectionTitle(context, 'Instructions'),
+                        const SizedBox(height: 16),
+                        _buildInstructions(context, meal),
+                        const SizedBox(height: 48),
                       ],
                     ),
-                    const SizedBox(height: 16),
-                    Text(
-                      'Ingredients',
-                      style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                            fontWeight: FontWeight.bold,
-                          ),
-                    ),
-                    const SizedBox(height: 8),
-                    ...meal.ingredients.map((ingredient) => Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 4),
-                          child: Row(
-                            children: [
-                              const Icon(Icons.check_circle_outline, size: 16),
-                              const SizedBox(width: 8),
-                              Expanded(
-                                child: Text(
-                                  '${ingredient.measure} ${ingredient.name}',
-                                  style: Theme.of(context).textTheme.bodyMedium,
-                                ),
-                              ),
-                            ],
-                          ),
-                        )),
-                    const SizedBox(height: 24),
-                    Text(
-                      'Instructions',
-                      style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                            fontWeight: FontWeight.bold,
-                          ),
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      meal.instructions,
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            height: 1.5,
-                          ),
-                    ),
-                    const SizedBox(height: 32),
-                  ]),
+                  ),
                 ),
               ),
             ],
@@ -121,6 +122,104 @@ class RecipeDetailScreen extends ConsumerWidget {
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildTag(BuildContext context, String label, {bool isSecondary = false}) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+      decoration: BoxDecoration(
+        color: isSecondary 
+          ? Colors.white 
+          : Theme.of(context).colorScheme.primary.withOpacity(0.08),
+        borderRadius: BorderRadius.circular(12),
+        border: isSecondary ? Border.all(color: const Color(0xFFEEEEEE)) : null,
+      ),
+      child: Text(
+        label.toUpperCase(),
+        style: Theme.of(context).textTheme.labelSmall?.copyWith(
+          color: isSecondary ? const Color(0xFF4F5D75) : Theme.of(context).colorScheme.primary,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSectionTitle(BuildContext context, String title) {
+    return Text(
+      title,
+      style: Theme.of(context).textTheme.headlineSmall,
+    );
+  }
+
+  Widget _buildIngredientsList(BuildContext context, Meal meal) {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(color: const Color(0xFFEEEEEE)),
+      ),
+      child: ListView.separated(
+        shrinkWrap: true,
+        padding: const EdgeInsets.all(20),
+        physics: const NeverScrollableScrollPhysics(),
+        itemCount: meal.ingredients.length,
+        separatorBuilder: (context, index) => const Divider(height: 24, color: Color(0xFFF5F5F5)),
+        itemBuilder: (context, index) {
+          final ingredient = meal.ingredients[index];
+          return Row(
+            children: [
+              Container(
+                width: 8,
+                height: 8,
+                decoration: BoxDecoration(
+                  color: Theme.of(context).colorScheme.primary.withOpacity(0.4),
+                  shape: BoxShape.circle,
+                ),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Text(
+                  ingredient.name,
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ),
+              Text(
+                ingredient.measure,
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: const Color(0xFF9EA9B1),
+                ),
+              ),
+            ],
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _buildInstructions(BuildContext context, Meal meal) {
+    final List<String> instructions = meal.instructions.split('\n').where((s) => s.trim().isNotEmpty).toList();
+    
+    return Column(
+      children: instructions.map<Widget>((step) {
+        return Padding(
+          padding: const EdgeInsets.only(bottom: 20),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(
+                child: Text(
+                  step.trim(),
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    height: 1.6,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        );
+      }).toList(),
     );
   }
 }
