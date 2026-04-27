@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:recipe_app/src/core/services/notification_service.dart';
 import 'package:recipe_app/src/core/widgets/empty_state.dart';
@@ -147,135 +148,163 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     final trendingResults = ref.watch(trendingRecipesProvider);
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('DISCOVER'),
-        actions: [
-          Padding(
-            padding: const EdgeInsets.only(right: 8.0),
-            child: IconButton(
-              icon: const Icon(Icons.favorite_outline_rounded),
-              onPressed: () {
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (context) => const FavoritesScreen(),
-                  ),
-                );
-              },
-            ),
-          ),
-        ],
-      ),
-      body: Column(
-        children: [
-          const RecipeSearchBar(),
-          Expanded(
-            child: searchResults.when(
-              data: (meals) {
-                if (meals.isEmpty && searchQuery.isNotEmpty) {
-                  return EmptyState(
+      body: searchResults.when(
+        data: (meals) {
+          if (meals.isEmpty && searchQuery.isNotEmpty) {
+            return CustomScrollView(
+              slivers: [
+                _buildSliverAppBar(context),
+                const SliverToBoxAdapter(child: RecipeSearchBar()),
+                SliverFillRemaining(
+                  child: EmptyState(
                     title: 'No Recipes Found',
                     message: 'No recipes found for "$searchQuery". Try another search.',
                     icon: Icons.search_off_rounded,
-                  );
-                }
+                  ),
+                ),
+              ],
+            );
+          }
 
-                // If searching, show search results
-                if (searchQuery.isNotEmpty) {
-                  return ListView.builder(
-                    padding: const EdgeInsets.only(bottom: 24),
-                    itemCount: meals.length,
-                    itemBuilder: (context, index) {
-                      final meal = meals[index];
-                      final heroTag = 'meal-${meal.id}-search';
-                      return Padding(
-                        padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
-                        child: RecipeCard(
-                          meal: meal,
-                          heroTag: heroTag,
-                          onTap: () {
-                            Navigator.of(context).push(
-                              MaterialPageRoute(
-                                builder: (context) => RecipeDetailScreen(
-                                  mealId: meal.id,
-                                  heroTag: heroTag,
+          return AnimationLimiter(
+            child: CustomScrollView(
+              slivers: [
+                _buildSliverAppBar(context),
+                const SliverToBoxAdapter(child: RecipeSearchBar()),
+                
+                if (searchQuery.isNotEmpty)
+                  SliverPadding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    sliver: SliverList(
+                      delegate: SliverChildBuilderDelegate(
+                        (context, index) {
+                          final meal = meals[index];
+                          final heroTag = 'meal-${meal.id}-search';
+                          return AnimationConfiguration.staggeredList(
+                            position: index,
+                            duration: const Duration(milliseconds: 375),
+                            child: SlideAnimation(
+                              verticalOffset: 50.0,
+                              child: FadeInAnimation(
+                                child: Padding(
+                                  padding: const EdgeInsets.only(bottom: 20),
+                                  child: RecipeCard(
+                                    meal: meal,
+                                    heroTag: heroTag,
+                                    onTap: () => _navigateToDetail(context, meal.id, heroTag),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          );
+                        },
+                        childCount: meals.length,
+                      ),
+                    ),
+                  )
+                else ...[
+                  const SliverToBoxAdapter(child: ContextualCarousel()),
+                  SliverToBoxAdapter(
+                    child: Padding(
+                      padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
+                      child: Text(
+                        'Recommendations',
+                        style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                              fontWeight: FontWeight.bold,
+                            ),
+                      ),
+                    ),
+                  ),
+                  trendingResults.when(
+                    data: (trending) => SliverPadding(
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                      sliver: SliverList(
+                        delegate: SliverChildBuilderDelegate(
+                          (context, index) {
+                            final meal = trending[index];
+                            final heroTag = 'meal-${meal.id}-trending';
+                            return AnimationConfiguration.staggeredList(
+                              position: index,
+                              duration: const Duration(milliseconds: 375),
+                              child: SlideAnimation(
+                                verticalOffset: 50.0,
+                                child: FadeInAnimation(
+                                  child: Padding(
+                                    padding: const EdgeInsets.only(bottom: 20),
+                                    child: RecipeCard(
+                                      meal: meal,
+                                      heroTag: heroTag,
+                                      onTap: () => _navigateToDetail(context, meal.id, heroTag),
+                                    ),
+                                  ),
                                 ),
                               ),
                             );
                           },
-                        ),
-                      );
-                    },
-                  );
-                }
-
-                // If NOT searching, show Carousel + Trending
-                return CustomScrollView(
-                  slivers: [
-                    const SliverToBoxAdapter(
-                      child: ContextualCarousel(),
-                    ),
-                    SliverToBoxAdapter(
-                      child: Padding(
-                        padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-                        child: Text(
-                          'Recommendations',
-                          style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                                fontWeight: FontWeight.bold,
-                              ),
+                          childCount: trending.length,
                         ),
                       ),
                     ),
-                    trendingResults.when(
-                      data: (trending) => SliverPadding(
-                        padding: const EdgeInsets.symmetric(horizontal: 20),
-                        sliver: SliverList(
-                          delegate: SliverChildBuilderDelegate(
-                            (context, index) {
-                              final meal = trending[index];
-                              final heroTag = 'meal-${meal.id}-trending';
-                              return Padding(
-                                padding: const EdgeInsets.only(bottom: 20),
-                                child: RecipeCard(
-                                  meal: meal,
-                                  heroTag: heroTag,
-                                  onTap: () {
-                                    Navigator.of(context).push(
-                                      MaterialPageRoute(
-                                        builder: (context) => RecipeDetailScreen(
-                                          mealId: meal.id,
-                                          heroTag: heroTag,
-                                        ),
-                                      ),
-                                    );
-                                  },
-                                ),
-                              );
-                            },
-                            childCount: trending.length,
-                          ),
-                        ),
-                      ),
-                      loading: () => const SliverFillRemaining(
-                        child: RecipeListShimmer(),
-                      ),
-                      error: (err, stack) => SliverToBoxAdapter(
-                        child: ErrorView(message: err.toString()),
-                      ),
-                    ),
-                    const SliverToBoxAdapter(
-                      child: SizedBox(height: 24),
-                    ),
-                  ],
-                );
-              },
-              loading: () => const RecipeListShimmer(),
-              error: (error, stack) => ErrorView(
+                    loading: () => const SliverToBoxAdapter(child: RecipeListShimmer()),
+                    error: (err, _) => SliverToBoxAdapter(child: ErrorView(message: err.toString())),
+                  ),
+                ],
+                const SliverToBoxAdapter(child: SizedBox(height: 32)),
+              ],
+            ),
+          );
+        },
+        loading: () => CustomScrollView(
+          slivers: [
+            _buildSliverAppBar(context),
+            const SliverToBoxAdapter(child: RecipeSearchBar()),
+            const SliverToBoxAdapter(child: RecipeListShimmer()),
+          ],
+        ),
+        error: (error, stack) => CustomScrollView(
+          slivers: [
+            _buildSliverAppBar(context),
+            const SliverToBoxAdapter(child: RecipeSearchBar()),
+            SliverFillRemaining(
+              child: ErrorView(
                 message: error.toString(),
                 onRetry: () => ref.refresh(searchRecipesProvider(searchQuery)),
               ),
             ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSliverAppBar(BuildContext context) {
+    return SliverAppBar.large(
+      title: const Text('DISCOVER'),
+      actions: [
+        Padding(
+          padding: const EdgeInsets.only(right: 8.0),
+          child: IconButton(
+            icon: const Icon(Icons.favorite_outline_rounded),
+            onPressed: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) => const FavoritesScreen(),
+                ),
+              );
+            },
           ),
-        ],
+        ),
+      ],
+    );
+  }
+
+  void _navigateToDetail(BuildContext context, String mealId, String heroTag) {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => RecipeDetailScreen(
+          mealId: mealId,
+          heroTag: heroTag,
+        ),
       ),
     );
   }

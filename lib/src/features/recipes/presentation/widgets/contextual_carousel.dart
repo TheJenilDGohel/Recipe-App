@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:recipe_app/src/core/theme/app_colors.dart';
 import 'package:recipe_app/src/features/recipes/presentation/providers/contextual_discovery_provider.dart';
 import 'package:recipe_app/src/features/recipes/presentation/screens/recipe_detail_screen.dart';
 import 'package:recipe_app/src/features/recipes/presentation/widgets/mini_recipe_card.dart';
@@ -46,15 +47,15 @@ class ContextualCarousel extends ConsumerWidget {
             child: subtitleAsync.when(
               data: (subtitle) => Text(
                 subtitle,
-                style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Colors.grey[600]),
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(color: AppColors.textSecondary),
               ),
               loading: () => const SizedBox(height: 16),
               error: (error, stack) => const SizedBox(height: 16),
             ),
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 20),
           SizedBox(
-            height: 216,
+            height: 230,
             child: ListView.builder(
               scrollDirection: Axis.horizontal,
               padding: const EdgeInsets.symmetric(horizontal: 16.0),

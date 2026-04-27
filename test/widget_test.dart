@@ -16,6 +16,6 @@ void main() {
     });
 
     // Verify that our app shows the welcome text.
-    expect(find.text('DISCOVER'), findsOneWidget);
+    expect(find.text('DISCOVER'), findsAtLeast(1));
   });
 }

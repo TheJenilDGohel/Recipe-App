@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:recipe_app/src/core/theme/app_colors.dart';
 import 'package:recipe_app/src/features/recipes/domain/models/meal.dart';
 
 class MiniRecipeCard extends StatelessWidget {
@@ -22,6 +23,7 @@ class MiniRecipeCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(24),
+        border: Border.all(color: AppColors.border.withValues(alpha: 0.5)),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.04),
@@ -61,15 +63,17 @@ class MiniRecipeCard extends StatelessWidget {
                   ),
                 ),
               ),
-              Padding(
-                padding: const EdgeInsets.all(12.0),
-                child: Text(
-                  meal.name,
-                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    fontSize: 14,
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.all(12.0),
+                  child: Text(
+                    meal.name,
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      fontSize: 14,
+                    ),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
                   ),
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
                 ),
               ),
             ],
