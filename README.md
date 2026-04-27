@@ -3,7 +3,6 @@
 </p>
 
 # 🍳 Context-Aware Recipe Discovery
-## Flutter Recruitment Assignment - ICSPL
 
 [![CI/CD Pipeline](https://github.com/TheJenilDGohel/Recipe-App/actions/workflows/main.yml/badge.svg)](https://github.com/TheJenilDGohel/Recipe-App/actions)
 [![Release](https://img.shields.io/github/v/release/TheJenilDGohel/Recipe-App?include_prereleases)](https://github.com/TheJenilDGohel/Recipe-App/releases)
