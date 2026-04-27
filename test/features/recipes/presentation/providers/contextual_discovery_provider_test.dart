@@ -6,7 +6,7 @@ import 'package:recipe_app/src/features/recipes/data/repositories/recipe_reposit
 import 'package:recipe_app/src/features/recipes/domain/models/meal.dart';
 import 'package:recipe_app/src/features/recipes/domain/repositories/recipe_repository.dart';
 import 'package:recipe_app/src/features/recipes/presentation/providers/contextual_discovery_provider.dart';
-import 'package:riverpod/riverpod.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class MockRecipeRepository extends Mock implements RecipeRepository {}
 class MockLocationService extends Mock implements LocationService {}

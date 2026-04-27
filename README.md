@@ -1,54 +1,62 @@
 # Context-Aware Recipe Discovery
+## Flutter Recruitment Assignment - ICSPL
 
-A production-grade Flutter application demonstrating proficiency in asynchronous programming, local persistence, location/time-based intelligence, and automated CI/CD pipelines.
+This repository contains the implementation of the "Context-Aware Recipe Discovery" application as per the recruitment assignment requirements.
 
-## 🚀 Key Features
+## 🏗️ Architectural Choices
 
-- **Smart Discovery**: Dynamic homepage suggestions based on the user's local time (Breakfast/Lunch/Dinner) and GPS location (Regional Cuisines).
-- **Optimized Search**: Debounced search functionality to minimize API overhead and improve performance.
-- **Offline-First Resilience**: 
-  - **Local Persistence**: Save "Favorite" recipes using Drift (SQLite).
-  - **Caching**: Robust caching for recipe data and images (`cached_network_image`).
-  - **State Continuity**: Seamless transition to offline mode with visual feedback and access to cached content.
-- **Proactive Engagement**:
-  - **Meal Reminders**: Scheduled local notifications triggered at breakfast, lunch, and dinner times.
-  - **Permission Resilience**: Graceful handling of location and notification permission requests.
-- **Premium UI/UX**:
-  - Shimmer/Skeleton loaders for all asynchronous operations.
-  - Hero transitions for visual continuity between list and detail views.
-  - Implicit animations for micro-interactions (e.g., favorite toggle pop).
-  - Global error handling with dedicated views for empty states and network failures.
+The application is built using **Feature-Driven Clean Architecture**. This choice was made to ensure the code remains modular, testable, and scalable.
 
-## 🏗️ Architecture
+### 1. Layered Separation (Clean Architecture)
+- **Data Layer**: Handles all external data interactions. We use the **Repository Pattern** to abstract data sources (TheMealDB API and Drift SQLite) from the rest of the app. This allows us to implement offline-first logic seamlessly.
+- **Domain Layer**: Contains the core business logic and entities. This layer is independent of any external libraries or UI components, ensuring it's easy to test and maintain.
+- **Presentation Layer**: Built with Flutter widgets and managed by **Riverpod**.
 
-The project follows a **Feature-Driven Clean Architecture** to ensure scalability and maintainability:
+### 2. State Management: Riverpod
+I chose **Riverpod** over Bloc or MobX for its:
+- **Compile-time safety**: No more `ProviderNotFoundException`.
+- **Flexibility**: Easier to handle asynchronous data with `AsyncValue`.
+- **Testability**: Simple to override providers during testing without boilerplate.
 
-- **Core**: Shared services (Location, Connectivity, Notifications), widgets, and constants.
-- **Features**: Isolated vertical slices (e.g., `recipes`) containing:
-  - **Data**: Repositories and Data Sources (TheMealDB API, Drift Database).
-  - **Domain**: Models and Business Logic.
-  - **Presentation**: UI widgets, screens, and Riverpod providers.
+### 3. Persistence: Drift (SQLite)
+For local storage, **Drift** was selected because it provides:
+- **Type-safe queries**: Generated code ensures we don't have runtime SQL errors.
+- **Performance**: High-speed interactions for a smooth offline experience.
+- **Reactive updates**: UI updates automatically when data in the database changes.
 
-### Tech Stack
-- **State Management**: [Riverpod](https://riverpod.dev/) (with code generation) for robust, testable state handling.
-- **Local Database**: [Drift](https://drift.simonbinder.eu/) (SQLite) for high-performance persistence.
-- **Networking**: [Dio](https://pub.dev/packages/dio) for optimized HTTP requests.
-- **Models**: [Freezed](https://pub.dev/packages/freezed) for immutable data classes and JSON serialization.
+### 4. Background Isolation
+To prevent UI freezing (jank), all heavy JSON parsing and database mapping are performed in **background isolates**. This ensures a consistent 60 FPS even when processing large recipe lists.
 
-## 🛠️ DevOps & CI/CD
+---
 
-The project includes a fully automated **GitHub Actions** pipeline (`.github/workflows/main.yml`):
+## 🚀 CI/CD Pipeline & Trigger Instructions
 
-### Pipeline Stages
-1. **Analyze & Test**: Runs `flutter analyze` and `flutter test` on every push and pull request.
-2. **Build Release**: On every push to the `main` branch, the pipeline builds a **Release APK**.
-3. **Automated Release**: Automatically uploads the generated APK to **GitHub Releases** with incremented version tags.
+The project includes a fully automated **GitHub Actions** pipeline (`.github/workflows/main.yml`) that handles verification and deployment.
 
-### How to trigger the CI/CD
-- **Pull Requests**: Simply opening a PR to `main` will trigger the verification (analysis and tests).
-- **Deployment**: Any push or merge into the `main` branch will trigger the full build and create a new release with the APK artifact.
+### Automated Triggers
+- **Verification**: Every **Pull Request** or **Push** to any branch triggers the `Analyze & Test` job to ensure code quality and stability.
+- **Release**: Every **Push to the `main` branch** triggers the full pipeline, which builds a Release APK and uploads it to the GitHub Releases section.
 
-## 📦 Getting Started
+### How to Manually Trigger the Pipeline
+For evaluation purposes, the workflow supports manual triggers:
+1. Navigate to the **"Actions"** tab in this GitHub repository.
+2. Select the **"CI/CD Pipeline"** workflow from the left sidebar.
+3. Click the **"Run workflow"** button.
+4. Select the branch (usually `main`) and click **"Run workflow"**.
+
+### 📦 Artifact (Release APK)
+The latest successfully built APK can always be found in the **[Releases](../../releases)** section of this repository.
+
+---
+
+## ✨ Implementation Highlights
+
+- **Smart Context**: Homepage dynamically suggests meals based on the user's **local time** (Breakfast/Lunch/Dinner) and **GPS location** (Local Cuisines).
+- **Offline Resilience**: Full support for favoriting and viewing recipes offline with cached images.
+- **Proactive Engagement**: Scheduled notifications for meal reminders with graceful permission handling.
+- **Premium UI**: Shimmer loaders, Hero transitions, and implicit animations for a polished feel.
+
+## 🛠️ Setup & Running
 
 1. **Clone the repository.**
 2. **Install dependencies**: `flutter pub get`

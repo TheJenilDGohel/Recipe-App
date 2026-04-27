@@ -131,7 +131,7 @@ class RecipeDetailScreen extends ConsumerWidget {
       decoration: BoxDecoration(
         color: isSecondary 
           ? Colors.white 
-          : Theme.of(context).colorScheme.primary.withOpacity(0.08),
+          : Theme.of(context).colorScheme.primary.withValues(alpha: 0.08),
         borderRadius: BorderRadius.circular(12),
         border: isSecondary ? Border.all(color: const Color(0xFFEEEEEE)) : null,
       ),
@@ -172,7 +172,7 @@ class RecipeDetailScreen extends ConsumerWidget {
                 width: 8,
                 height: 8,
                 decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.primary.withOpacity(0.4),
+                  color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.4),
                   shape: BoxShape.circle,
                 ),
               ),
