@@ -35,14 +35,14 @@ The project includes a fully automated **GitHub Actions** pipeline (`.github/wor
 
 ### Automated Triggers
 - **Verification**: Every **Pull Request** or **Push** to any branch triggers the `Analyze & Test` job to ensure code quality and stability.
-- **Release**: Every **Push to the `main` branch** triggers the full pipeline, which builds a Release APK and uploads it to the GitHub Releases section.
+- **Release**: Every **Push to the `master` branch** triggers the full pipeline, which builds a Release APK and uploads it to the GitHub Releases section.
 
 ### How to Manually Trigger the Pipeline
 For evaluation purposes, the workflow supports manual triggers:
 1. Navigate to the **"Actions"** tab in this GitHub repository.
 2. Select the **"CI/CD Pipeline"** workflow from the left sidebar.
 3. Click the **"Run workflow"** button.
-4. Select the branch (usually `main`) and click **"Run workflow"**.
+4. Select the branch (usually `master`) and click **"Run workflow"**.
 
 ### 📦 Artifact (Release APK)
 The latest successfully built APK can always be found in the **[Releases](../../releases)** section of this repository.

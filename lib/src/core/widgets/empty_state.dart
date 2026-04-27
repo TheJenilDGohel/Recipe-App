@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:recipe_app/src/core/theme/app_colors.dart';
 
 class EmptyState extends StatelessWidget {
   const EmptyState({
@@ -46,7 +47,7 @@ class EmptyState extends StatelessWidget {
             Text(
               message,
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: const Color(0xFF9EA9B1),
+                    color: AppColors.textHint,
                   ),
               textAlign: TextAlign.center,
             ),

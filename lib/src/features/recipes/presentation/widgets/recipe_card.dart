@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:recipe_app/src/core/theme/app_colors.dart';
 import '../../domain/models/meal.dart';
 import 'favorite_toggle.dart';
 
@@ -112,7 +113,7 @@ class RecipeCard extends StatelessWidget {
                           ),
                         ),
                         const SizedBox(width: 12),
-                        const Icon(Icons.location_on_outlined, size: 14, color: Color(0xFF9EA9B1)),
+                        const Icon(Icons.location_on_outlined, size: 14, color: AppColors.textHint),
                         const SizedBox(width: 4),
                         Text(
                           meal.area,

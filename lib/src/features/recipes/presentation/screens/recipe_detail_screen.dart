@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:recipe_app/src/core/theme/app_colors.dart';
 import 'package:recipe_app/src/core/widgets/error_view.dart';
 import 'package:recipe_app/src/features/recipes/domain/models/meal.dart';
 import '../providers/recipe_details_provider.dart';
@@ -45,7 +46,7 @@ class RecipeDetailScreen extends ConsumerWidget {
                   child: CircleAvatar(
                     backgroundColor: Colors.white,
                     child: IconButton(
-                      icon: const Icon(Icons.arrow_back_rounded, color: Color(0xFF2D3142)),
+                      icon: const Icon(Icons.arrow_back_rounded, color: AppColors.textPrimary),
                       onPressed: () => Navigator.of(context).pop(),
                     ),
                   ),
@@ -76,7 +77,7 @@ class RecipeDetailScreen extends ConsumerWidget {
               SliverToBoxAdapter(
                 child: Container(
                   decoration: const BoxDecoration(
-                    color: Color(0xFFFAFAFA),
+                    color: AppColors.background,
                     borderRadius: BorderRadius.vertical(top: Radius.circular(32)),
                   ),
                   child: Padding(
@@ -133,12 +134,12 @@ class RecipeDetailScreen extends ConsumerWidget {
           ? Colors.white 
           : Theme.of(context).colorScheme.primary.withValues(alpha: 0.08),
         borderRadius: BorderRadius.circular(12),
-        border: isSecondary ? Border.all(color: const Color(0xFFEEEEEE)) : null,
+        border: isSecondary ? Border.all(color: AppColors.border) : null,
       ),
       child: Text(
         label.toUpperCase(),
         style: Theme.of(context).textTheme.labelSmall?.copyWith(
-          color: isSecondary ? const Color(0xFF4F5D75) : Theme.of(context).colorScheme.primary,
+          color: isSecondary ? AppColors.textSecondary : Theme.of(context).colorScheme.primary,
         ),
       ),
     );
@@ -156,14 +157,14 @@ class RecipeDetailScreen extends ConsumerWidget {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: const Color(0xFFEEEEEE)),
+        border: Border.all(color: AppColors.border),
       ),
       child: ListView.separated(
         shrinkWrap: true,
         padding: const EdgeInsets.all(20),
         physics: const NeverScrollableScrollPhysics(),
         itemCount: meal.ingredients.length,
-        separatorBuilder: (context, index) => const Divider(height: 24, color: Color(0xFFF5F5F5)),
+        separatorBuilder: (context, index) => const Divider(height: 24, color: AppColors.divider),
         itemBuilder: (context, index) {
           final ingredient = meal.ingredients[index];
           return Row(
@@ -188,7 +189,7 @@ class RecipeDetailScreen extends ConsumerWidget {
               Text(
                 ingredient.measure,
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: const Color(0xFF9EA9B1),
+                  color: AppColors.textHint,
                 ),
               ),
             ],

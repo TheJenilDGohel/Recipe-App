@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:recipe_app/src/core/theme/app_colors.dart';
 import '../providers/search_provider.dart';
 
 class RecipeSearchBar extends ConsumerWidget {
@@ -25,7 +26,7 @@ class RecipeSearchBar extends ConsumerWidget {
           },
           decoration: InputDecoration(
             hintText: 'Search for ingredients or recipes...',
-            prefixIcon: const Icon(Icons.search_rounded, color: Color(0xFF2D3142)),
+            prefixIcon: const Icon(Icons.search_rounded, color: AppColors.textPrimary),
             suffixIcon: ref.watch(searchQueryProvider).isNotEmpty
                 ? IconButton(
                     icon: const Icon(Icons.clear_rounded, size: 20),

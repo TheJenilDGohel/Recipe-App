@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:recipe_app/src/core/theme/app_colors.dart';
 import '../network/connectivity_provider.dart';
 
 class OfflineBanner extends ConsumerWidget {
@@ -20,7 +21,7 @@ class OfflineBanner extends ConsumerWidget {
                   child: Container(
                     height: 32,
                     width: double.infinity,
-                    color: const Color(0xFF7C3AED),
+                    color: AppColors.offline,
                     child: const Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
@@ -42,10 +43,11 @@ class OfflineBanner extends ConsumerWidget {
                     ),
                   ),
                 )
-              : const SizedBox(width: double.infinity, height: 0),
+              : const SizedBox.shrink(),
         );
       },
       orElse: () => const SizedBox.shrink(),
     );
   }
 }
+
