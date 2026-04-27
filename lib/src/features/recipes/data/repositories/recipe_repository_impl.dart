@@ -92,7 +92,8 @@ class RecipeRepositoryImpl implements RecipeRepository {
       await _localDataSource.cacheMeals(meals);
       return meals;
     } catch (_) {
-      return [];
+      // Fallback to local cache on error
+      return _localDataSource.getMealsByArea(area);
     }
   }
 
@@ -103,7 +104,8 @@ class RecipeRepositoryImpl implements RecipeRepository {
       await _localDataSource.cacheMeals(meals);
       return meals;
     } catch (_) {
-      return [];
+      // Fallback to local cache on error
+      return _localDataSource.getMealsByCategory(category);
     }
   }
 }
@@ -115,4 +117,3 @@ RecipeRepository recipeRepository(RecipeRepositoryRef ref) {
     ref.watch(recipeLocalDataSourceProvider),
   );
 }
-

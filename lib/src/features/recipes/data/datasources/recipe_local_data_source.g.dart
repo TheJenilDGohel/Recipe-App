@@ -7,7 +7,7 @@ part of 'recipe_local_data_source.dart';
 // **************************************************************************
 
 String _$recipeLocalDataSourceHash() =>
-    r'63a3417b14b39895118d9a28d6513425a4c73a4a';
+    r'7c2e044b9d283d9d265ee4dfe52c8e0193382aab';
 
 /// See also [recipeLocalDataSource].
 @ProviderFor(recipeLocalDataSource)

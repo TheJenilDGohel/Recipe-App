@@ -7,7 +7,7 @@ part of 'recipe_remote_data_source.dart';
 // **************************************************************************
 
 String _$recipeRemoteDataSourceHash() =>
-    r'e7ab9634ec8e56466f5b521dda85127334232891';
+    r'1a86fe00c5e704c5fe6df62d756cc82506e335f1';
 
 /// See also [recipeRemoteDataSource].
 @ProviderFor(recipeRemoteDataSource)
