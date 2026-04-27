@@ -1,4 +1,7 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_displaymode/flutter_displaymode.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:recipe_app/src/core/services/notification_service.dart';
 import 'package:recipe_app/src/core/widgets/offline_banner.dart';
@@ -8,11 +11,18 @@ import 'package:recipe_app/src/features/recipes/presentation/screens/home_screen
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
+  // Enable 120Hz/High Refresh Rate on supported Android devices
+  if (Platform.isAndroid) {
+    try {
+      await FlutterDisplayMode.setHighRefreshRate();
+    } catch (_) {
+      // Fallback for devices without high refresh rate support
+    }
+  }
+
   final container = ProviderContainer();
   final notificationService = container.read(notificationServiceProvider);
   await notificationService.init();
-  // Request permissions on startup as per ENG-02
-  await notificationService.requestPermissions();
 
   runApp(
     UncontrolledProviderScope(

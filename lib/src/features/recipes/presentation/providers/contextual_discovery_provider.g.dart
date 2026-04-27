@@ -21,7 +21,7 @@ final currentTimeProvider = AutoDisposeProvider<DateTime>.internal(
 
 typedef CurrentTimeRef = AutoDisposeProviderRef<DateTime>;
 String _$contextualDiscoveryHash() =>
-    r'e400076b142fabc2d2adfc06e725ebed9adb0e00';
+    r'd7eb03a6a90e59d2984bd6659b162b74dcbc5e84';
 
 /// See also [contextualDiscovery].
 @ProviderFor(contextualDiscovery)
@@ -71,5 +71,20 @@ final contextualDiscoverySubtitleProvider =
 );
 
 typedef ContextualDiscoverySubtitleRef = AutoDisposeFutureProviderRef<String>;
+String _$trendingRecipesHash() => r'f20aa0f7d2e6cc9cfcc6baedd3242e4a6e0e9cba';
+
+/// See also [trendingRecipes].
+@ProviderFor(trendingRecipes)
+final trendingRecipesProvider = AutoDisposeFutureProvider<List<Meal>>.internal(
+  trendingRecipes,
+  name: r'trendingRecipesProvider',
+  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+      ? null
+      : _$trendingRecipesHash,
+  dependencies: null,
+  allTransitiveDependencies: null,
+);
+
+typedef TrendingRecipesRef = AutoDisposeFutureProviderRef<List<Meal>>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member

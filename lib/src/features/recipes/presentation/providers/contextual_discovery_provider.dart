@@ -91,7 +91,15 @@ Future<List<Meal>> contextualDiscovery(ContextualDiscoveryRef ref) async {
 
   // Fallback to time-based discovery
   final category = _getCategoryForTime(time);
-  return await repo.filterByCategory(category);
+  final meals = await repo.filterByCategory(category);
+
+  if (meals.isEmpty) {
+    // ULTIMATE FALLBACK: If category is empty (rare for API, but possible), 
+    // fetch a few random meals or search for a popular term.
+    return await repo.searchMeals('Chicken'); // 'Chicken' is always a safe bet for data
+  }
+
+  return meals;
 }
 
 @riverpod
@@ -119,4 +127,11 @@ Future<String> contextualDiscoverySubtitle(ContextualDiscoverySubtitleRef ref) a
     // Ignore error, fallback to global
   }
   return 'Trending Globally';
+}
+
+@riverpod
+Future<List<Meal>> trendingRecipes(TrendingRecipesRef ref) async {
+  final repo = ref.watch(recipeRepositoryProvider);
+  // Fetch popular categories or general search
+  return await repo.searchMeals('Pasta');
 }

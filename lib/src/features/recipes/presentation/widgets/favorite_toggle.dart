@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -42,10 +44,18 @@ class _FavoriteToggleState extends ConsumerState<FavoriteToggle>
     super.dispose();
   }
 
-  void _handleTap() {
-    HapticFeedback.mediumImpact();
-    _controller.forward(from: 0.0);
-    ref.read(favoritesProvider.notifier).toggleFavorite(widget.meal);
+  void _handleTap() async {
+    if (_controller.isAnimating) return;
+    
+    unawaited(HapticFeedback.mediumImpact());
+    
+    // Start animation
+    await _controller.forward(from: 0.0);
+    
+    // Only update the global state AFTER the animation feels 'complete' (or mid-way for speed)
+    if (mounted) {
+      unawaited(ref.read(favoritesProvider.notifier).toggleFavorite(widget.meal));
+    }
   }
 
   @override
@@ -60,13 +70,18 @@ class _FavoriteToggleState extends ConsumerState<FavoriteToggle>
         child: ScaleTransition(
           scale: _scaleAnimation,
           child: AnimatedSwitcher(
-            duration: const Duration(milliseconds: 200),
+            duration: const Duration(milliseconds: 300),
+            switchInCurve: Curves.easeOutBack,
+            switchOutCurve: Curves.easeIn,
             transitionBuilder: (Widget child, Animation<double> animation) {
-              return ScaleTransition(scale: animation, child: child);
+              return FadeTransition(
+                opacity: animation,
+                child: ScaleTransition(scale: animation, child: child),
+              );
             },
             child: Icon(
               isFav ? Icons.favorite : Icons.favorite_border,
-              key: ValueKey<bool>(isFav),
+              key: ValueKey<bool>(isFav), // Stable key ensures correct switching
               color: isFav ? Colors.red : Colors.grey,
               size: widget.size,
             ),

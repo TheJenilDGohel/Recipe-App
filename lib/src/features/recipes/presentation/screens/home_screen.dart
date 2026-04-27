@@ -13,6 +13,8 @@ import 'package:recipe_app/src/features/recipes/presentation/widgets/recipe_card
 import 'package:recipe_app/src/features/recipes/presentation/widgets/recipe_shimmer.dart';
 import 'package:recipe_app/src/features/recipes/presentation/widgets/search_bar.dart';
 
+import 'package:recipe_app/src/core/services/settings_service.dart';
+
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
 
@@ -24,19 +26,34 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _checkLocationPermission();
-      _scheduleReminders();
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      await _checkLocationPermission();
+      await _scheduleReminders();
     });
   }
 
   Future<void> _scheduleReminders() async {
+    final settings = await ref.read(settingsServiceProvider.future);
     final service = ref.read(notificationServiceProvider);
-    final granted = await service.requestPermissions();
-    if (granted) {
-      await service.scheduleMealReminders();
-    } else {
-      _showNotificationDeniedDialog();
+    
+    if (settings.isRemindersPromptShown()) {
+      return;
+    }
+
+    // Show informative dialog FIRST
+    final shouldRequest = await _showPermissionInfoDialog(
+      title: 'Meal Reminders',
+      content: 'Would you like to receive suggestions for Breakfast, Lunch, and Dinner? We can send you a notification at meal times.',
+      icon: Icons.notifications_active_rounded,
+    );
+
+    await settings.setRemindersPromptShown(true);
+
+    if (shouldRequest) {
+      final granted = await service.requestPermissions();
+      if (granted) {
+        await service.scheduleMealReminders();
+      }
     }
   }
 
@@ -50,16 +67,31 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     }
 
     permission = await Geolocator.checkPermission();
+    
     if (permission == LocationPermission.denied) {
-      permission = await Geolocator.requestPermission();
-      if (permission == LocationPermission.denied || permission == LocationPermission.deniedForever) {
-        _showLocationDeniedDialog();
+      final settings = await ref.read(settingsServiceProvider.future);
+      if (settings.isRemindersPromptShown()) {
+        // Use the same flag or another one for location. 
+        // For now, let's just avoid double dialogs on first run.
+        return;
+      }
+
+      // Show informative dialog FIRST
+      final shouldRequest = await _showPermissionInfoDialog(
+        title: 'Local Cuisines',
+        content: 'Discover recipes popular in your region! Enable location to get personalized local suggestions.',
+        icon: Icons.location_on_rounded,
+      );
+
+      if (shouldRequest) {
+        permission = await Geolocator.requestPermission();
+      } else {
         return;
       }
     }
     
     if (permission == LocationPermission.deniedForever) {
-      _showLocationDeniedDialog();
+      // Don't show this automatically on every visit if already denied
       return;
     }
     
@@ -69,48 +101,50 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     }
   }
 
-  void _showLocationDeniedDialog() {
-    if (!mounted) return;
-    showDialog(
+  Future<bool> _showPermissionInfoDialog({
+    required String title,
+    required String content,
+    required IconData icon,
+  }) async {
+    if (!mounted) return false;
+    
+    final result = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Personalize Your Recipes'),
-        content: const Text('Enable location to discover popular cuisines in your region. You can always change this later in settings.'),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+        title: Row(
+          children: [
+            Icon(icon, color: Theme.of(context).colorScheme.primary),
+            const SizedBox(width: 12),
+            Text(title),
+          ],
+        ),
+        content: Text(content),
         actions: [
           TextButton(
-            onPressed: () => Navigator.of(context).pop(),
+            onPressed: () => Navigator.of(context).pop(false),
             child: const Text('Not Now'),
           ),
           ElevatedButton(
-            onPressed: () {
-              Geolocator.openAppSettings();
-              Navigator.of(context).pop();
-            },
-            child: const Text('Open Settings'),
+            onPressed: () => Navigator.of(context).pop(true),
+            style: ElevatedButton.styleFrom(
+              elevation: 0,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            ),
+            child: const Text('I\'m Interested'),
           ),
         ],
       ),
     );
-  }
-
-  void _showNotificationDeniedDialog() {
-    if (!mounted) return;
-    // Show a subtle snackbar or non-intrusive dialog for notifications
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: const Text('Enable notifications for meal-time recipe ideas!'),
-        action: SnackBarAction(
-          label: 'Settings',
-          onPressed: () => Geolocator.openAppSettings(), // General settings
-        ),
-      ),
-    );
+    
+    return result ?? false;
   }
 
   @override
   Widget build(BuildContext context) {
     final searchQuery = ref.watch(searchQueryProvider);
     final searchResults = ref.watch(searchRecipesProvider(searchQuery));
+    final trendingResults = ref.watch(trendingRecipesProvider);
 
     return Scaffold(
       appBar: AppBar(
@@ -145,36 +179,93 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   );
                 }
 
-                return ListView.builder(
-                  padding: const EdgeInsets.only(bottom: 24),
-                  itemCount: meals.length + (searchQuery.isEmpty ? 1 : 0),
-                  itemBuilder: (context, index) {
-                    if (searchQuery.isEmpty && index == 0) {
-                      return const ContextualCarousel();
-                    }
-
-                    final mealIndex = searchQuery.isEmpty ? index - 1 : index;
-                    final meal = meals[mealIndex];
-                    final heroTag = 'meal-${meal.id}-home';
-
-                    return Padding(
-                      padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
-                      child: RecipeCard(
-                        meal: meal,
-                        heroTag: heroTag,
-                        onTap: () {
-                          Navigator.of(context).push(
-                            MaterialPageRoute(
-                              builder: (context) => RecipeDetailScreen(
-                                mealId: meal.id,
-                                heroTag: heroTag,
+                // If searching, show search results
+                if (searchQuery.isNotEmpty) {
+                  return ListView.builder(
+                    padding: const EdgeInsets.only(bottom: 24),
+                    itemCount: meals.length,
+                    itemBuilder: (context, index) {
+                      final meal = meals[index];
+                      final heroTag = 'meal-${meal.id}-search';
+                      return Padding(
+                        padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
+                        child: RecipeCard(
+                          meal: meal,
+                          heroTag: heroTag,
+                          onTap: () {
+                            Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (context) => RecipeDetailScreen(
+                                  mealId: meal.id,
+                                  heroTag: heroTag,
+                                ),
                               ),
-                            ),
-                          );
-                        },
+                            );
+                          },
+                        ),
+                      );
+                    },
+                  );
+                }
+
+                // If NOT searching, show Carousel + Trending
+                return CustomScrollView(
+                  slivers: [
+                    const SliverToBoxAdapter(
+                      child: ContextualCarousel(),
+                    ),
+                    SliverToBoxAdapter(
+                      child: Padding(
+                        padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+                        child: Text(
+                          'Recommendations',
+                          style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                                fontWeight: FontWeight.bold,
+                              ),
+                        ),
                       ),
-                    );
-                  },
+                    ),
+                    trendingResults.when(
+                      data: (trending) => SliverPadding(
+                        padding: const EdgeInsets.symmetric(horizontal: 20),
+                        sliver: SliverList(
+                          delegate: SliverChildBuilderDelegate(
+                            (context, index) {
+                              final meal = trending[index];
+                              final heroTag = 'meal-${meal.id}-trending';
+                              return Padding(
+                                padding: const EdgeInsets.only(bottom: 20),
+                                child: RecipeCard(
+                                  meal: meal,
+                                  heroTag: heroTag,
+                                  onTap: () {
+                                    Navigator.of(context).push(
+                                      MaterialPageRoute(
+                                        builder: (context) => RecipeDetailScreen(
+                                          mealId: meal.id,
+                                          heroTag: heroTag,
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                ),
+                              );
+                            },
+                            childCount: trending.length,
+                          ),
+                        ),
+                      ),
+                      loading: () => const SliverFillRemaining(
+                        child: RecipeListShimmer(),
+                      ),
+                      error: (err, stack) => SliverToBoxAdapter(
+                        child: ErrorView(message: err.toString()),
+                      ),
+                    ),
+                    const SliverToBoxAdapter(
+                      child: SizedBox(height: 24),
+                    ),
+                  ],
                 );
               },
               loading: () => const RecipeListShimmer(),

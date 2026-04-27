@@ -1,4 +1,3 @@
-import 'dart:isolate';
 import 'package:dio/dio.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'dio_client.dart';
@@ -10,7 +9,7 @@ class ApiService {
 
   final Dio _dio;
 
-  /// Performs a GET request and maps the response in a background isolate.
+  /// Performs a GET request and maps the response.
   /// 
   /// [path] The endpoint path.
   /// [queryParameters] Optional query parameters.
@@ -23,7 +22,7 @@ class ApiService {
     final response = await _dio.get(path, queryParameters: queryParameters);
     final data = response.data;
     
-    return Isolate.run(() => mapper(data));
+    return mapper(data);
   }
 }
 

@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:isolate';
 
 import 'package:drift/drift.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -15,9 +14,9 @@ class LocalStorageService {
   final AppDatabase _db;
 
   Future<void> saveMeal(Meal meal) async {
-    final ingredientsJson = await Isolate.run(() => jsonEncode(
-          meal.ingredients.map((e) => e.toJson()).toList(),
-        ));
+    final ingredientsJson = jsonEncode(
+      meal.ingredients.map((e) => e.toJson()).toList(),
+    );
 
     await _db.into(_db.meals).insertOnConflictUpdate(
           MealsCompanion.insert(
@@ -39,27 +38,25 @@ class LocalStorageService {
 
     if (result == null) return null;
 
-    final meal = await Isolate.run(() => _mapToMealStatic(result));
+    final meal = _mapMealDataToMeal(result);
     return (meal, result.cachedAt);
   }
 
   Future<void> cacheMeals(List<Meal> meals) async {
-    final companions = await Isolate.run(() {
-      return meals.map((meal) {
-        return MealsCompanion.insert(
-          id: meal.id,
-          name: meal.name,
-          category: Value(meal.category),
-          area: Value(meal.area),
-          instructions: Value(meal.instructions),
-          thumbnailUrl: Value(meal.thumbnailUrl),
-          ingredientsJson: jsonEncode(
-            meal.ingredients.map((e) => e.toJson()).toList(),
-          ),
-          cachedAt: DateTime.now(),
-        );
-      }).toList();
-    });
+    final companions = meals.map((meal) {
+      return MealsCompanion.insert(
+        id: meal.id,
+        name: meal.name,
+        category: Value(meal.category),
+        area: Value(meal.area),
+        instructions: Value(meal.instructions),
+        thumbnailUrl: Value(meal.thumbnailUrl),
+        ingredientsJson: jsonEncode(
+          meal.ingredients.map((e) => e.toJson()).toList(),
+        ),
+        cachedAt: DateTime.now(),
+      );
+    }).toList();
 
     await _db.batch((batch) {
       for (final companion in companions) {
@@ -73,19 +70,19 @@ class LocalStorageService {
       ..where((t) => t.name.contains(query) | t.category.contains(query));
     final results = await dbQuery.get();
 
-    return Isolate.run(() => results.map(_mapToMealStatic).toList());
+    return results.map(_mapMealDataToMeal).toList();
   }
 
   Future<List<Meal>> getMealsByArea(String area) async {
     final dbQuery = _db.select(_db.meals)..where((t) => t.area.equals(area));
     final results = await dbQuery.get();
-    return Isolate.run(() => results.map(_mapToMealStatic).toList());
+    return results.map(_mapMealDataToMeal).toList();
   }
 
   Future<List<Meal>> getMealsByCategory(String category) async {
     final dbQuery = _db.select(_db.meals)..where((t) => t.category.equals(category));
     final results = await dbQuery.get();
-    return Isolate.run(() => results.map(_mapToMealStatic).toList());
+    return results.map(_mapMealDataToMeal).toList();
   }
 
   Future<void> toggleFavorite(String mealId) async {
@@ -111,12 +108,13 @@ class LocalStorageService {
     ]);
 
     final results = await query.get();
-    return Isolate.run(() => results.map((row) {
-          return _mapToMealStatic(row.readTable(_db.meals));
-        }).toList());
+    
+    return results.map((row) {
+      return _mapMealDataToMeal(row.readTable(_db.meals));
+    }).toList();
   }
 
-  static Meal _mapToMealStatic(MealData data) {
+  static Meal _mapMealDataToMeal(MealData data) {
     final ingredientsList = jsonDecode(data.ingredientsJson) as List;
     final ingredients = ingredientsList
         .map((e) => Ingredient.fromJson(e as Map<String, dynamic>))

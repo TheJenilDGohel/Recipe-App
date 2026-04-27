@@ -59,12 +59,7 @@ class NotificationService {
       
       // Check for exact alarm permission on Android 12+
       if (Platform.isAndroid) {
-        final bool? exactAlarmGranted = await androidImplementation?.canScheduleExactAlarms();
-        if (exactAlarmGranted == false) {
-          // Note: In a real app, you might want to show a dialog explaining why this is needed
-          // but for this assignment, we just try to request it if the plugin supports it
-          // or at least we've added USE_EXACT_ALARM to the manifest which handles it for Android 13+
-        }
+        await androidImplementation?.requestExactAlarmsPermission();
       }
 
       return granted ?? false;
