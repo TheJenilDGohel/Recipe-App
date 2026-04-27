@@ -12,81 +12,77 @@ A production-grade Flutter application that provides an intelligent, offline-cap
 
 ---
 
-## 🏗️ Architectural Choices
+## 🏗️ Detailed Architecture
 
-The application is built using **Feature-Driven Clean Architecture**, emphasizing modularity, testability, and a superior user experience.
+The application is built using **Feature-Driven Clean Architecture**, ensuring strict separation of concerns, high testability, and modularity.
 
-### 1. Layered Separation (Clean Architecture)
-- **Data Layer**: Implements the **Repository Pattern** to abstract data sources (TheMealDB API and Drift SQLite).
-- **Domain Layer**: Houses core business logic, entities, and repository interfaces, remaining independent of external frameworks.
-- **Presentation Layer**: Built with highly responsive Flutter widgets and managed by **Riverpod (2.x)**.
+### 1. The Data Layer (Persistence & Networking)
+- **Repository Pattern**: All data flow is mediated by repositories that handle the logic between remote (TheMealDB API) and local (Drift/SQLite) sources.
+- **Offline-First Strategy**: The app proactively caches searched recipes and ensures all "Favorite" data is stored locally for 100% offline accessibility.
+- **Service Isolation**: Specialized services handle cross-cutting concerns:
+    - `ApiService`: Standardized Dio-based network layer.
+    - `LocalStorageService`: DAO-style access to the SQLite database.
+    - `LocationService`: Passive geolocation wrapper.
+    - `NotificationService`: Local scheduling engine.
 
-### 2. State Management & Logic
-- **Riverpod**: Used for its compile-time safety and robust handling of asynchronous data states (`AsyncValue`).
-- **Persistence (Drift/SQLite)**: Provides a type-safe, reactive database for 100% offline access to favorites and cached searches.
-- **Settings (Shared Preferences)**: Persists user preferences and interaction flags (e.g., permission prompt history) for a consistent UX across sessions.
+### 2. The Domain Layer (Business Logic)
+- **Entities**: Plain Dart objects (models) representing the core data structures (Meal, Ingredient), independent of any framework.
+- **Interfaces**: Definition of repository contracts to allow easy mocking and decoupled implementation.
 
-### 3. Performance & Stability
-- **120Hz Support**: Integrated `flutter_displaymode` to unlock the highest available refresh rates on Android, ensuring buttery-smooth scrolling.
-- **Isolate-Safe Mapping**: All data mapping is architected for stability, preventing common "unsendable object" crashes during background processing.
-- **Perceived Performance**: Extensive use of **Shimmer/Skeleton** loaders and **Hero animations** to eliminate perceived wait times.
-
----
-
-## 🎨 Branding & Visual Identity
-
-### The "Context Cloche"
-A custom-designed minimalist brand identity:
-- **The Cloche**: High-quality culinary content.
-- **Map Marker Pin**: Location-aware discovery.
-- **Clock Hand**: Time-based meal suggestions.
-
-### Premium Design System
-- **Theme**: Deep Navy (`#2D3142`) and Vibrant Purple (`#7C3AED`) accent.
-- **UX Ethics**: Implements an **Informative Permission Flow**. The app explains *why* it needs access (e.g., "Discover local cuisines") before triggering system prompts, building user trust.
+### 3. The Presentation Layer (UI & State)
+- **Riverpod (2.x)**: Managed via Code Generation for compile-time safety.
+- **AsyncValue**: Used to handle loading, error, and data states reactively and consistently.
+- **Optimistic UI**: Favorites are updated instantly in the UI while the database operation runs in the background, providing a lag-free feel.
 
 ---
 
-## 🚀 CI/CD Pipeline & Trigger Instructions
+## 🧠 The Recommendation Engine
 
-Automated via **GitHub Actions** (`.github/workflows/main.yml`).
-
-### Triggers
-- **Verification**: Every PR or Push to `master` triggers linting and unit tests.
-- **Release**: Every Push to `master` builds a production APK and uploads it to GitHub Releases.
-- **Manual**: Supports `workflow_dispatch` for on-demand evaluator runs.
-
-### How to Manually Trigger
-1. Go to the **"Actions"** tab in GitHub.
-2. Select **"CI/CD Pipeline"**.
-3. Click **"Run workflow"** on the `master` branch.
-
-### 📦 Download Artifact (Release APK)
-Find the latest build in the **[Releases](../../releases)** section.
+Moving beyond static keywords, the app features a hybrid **Recommendation Engine**:
+1.  **Personalization (Warm Start)**: Analyzes your "Favorites" to build a category frequency map. It prioritizes recipes from your most-liked category.
+2.  **Dynamic Discovery (Cold Start)**: If no favorites exist, it uses a rotating pool of seed categories that updates every minute.
+3.  **Serendipity Injection**: Every recommendation set includes a completely random meal (Discovery) to prevent a "filter bubble."
+4.  **Shuffle Logic**: Results are shuffled on every load to ensure the dashboard always feels fresh and alive.
 
 ---
 
-## 🛠️ Tech Stack & Setup
+## 🚀 Challenges Faced & Solutions
 
-### Requirements
-- **Framework**: Flutter 3.x (Stable)
-- **Engine**: Impeller (Vulkan) enabled for Android stability.
-
-### Setup
-```bash
-flutter pub get
-dart run build_runner build --delete-conflicting-outputs
-dart run flutter_launcher_icons
-dart run flutter_native_splash:create
-flutter run
-```
+| Challenge | Impact | Resolution |
+| :--- | :--- | :--- |
+| **Isolate Crashes** | "Illegal argument in isolate message" errors during background mapping. | Refactored mapping logic to **static/top-level functions** to prevent implicit capture of the non-serializable database instance. |
+| **CI/CD Triggers** | Pipeline wasn't triggering on push to `master`. | Identified branch name mismatch (`main` vs `master`) and aligned the YAML configuration and documentation. |
+| **Android 12+ Alarms** | App crashed when scheduling meal reminders. | Implemented `USE_EXACT_ALARM` permissions and dynamic permission checks for Android 12, 13, and 14+. |
+| **Sliver Overflows** | "Vertical viewport given unbounded height" error in the new UI. | Refactored Shimmer loaders from `ListView` to `Column` to ensure compatibility with `SliverToBoxAdapter`. |
+| **Perceived Lag** | UI felt slightly sluggish on high-end devices. | Integrated `flutter_displaymode` to force **120Hz refresh rate** on supported Android devices. |
 
 ---
 
-## ✨ Functional Compliance Checklist
+## ✨ Features & Polish
 
-- [x] **Smart Discovery**: Time-based (Breakfast/Lunch/Dinner) + Location-aware (Local Area).
-- [x] **Search**: Debounced search with fallback to local favorites on network failure.
-- [x] **Offline-First**: SQL persistence, image caching, and graceful state resilience.
-- [x] **Engagement**: Local scheduled notifications for meal reminders.
-- [x] **Stability**: 120Hz scrolling, overflow-safe Error views, and robust permission handling.
+- **120Hz Support**: Buttery-smooth scrolling optimized for modern displays.
+- **Premium UI**: Large scrolling `SliverAppBar`, staggered entrance animations, and Hero transitions.
+- **Ethical UX**: Informative dialogs that explain the *why* before asking for system permissions.
+- **Total Offline Resilience**: Fully functional cookbook, including cached images and SQL data.
+- **Meal Reminders**: Scheduled notifications for Breakfast, Lunch, and Dinner.
+
+---
+
+## 🛠️ Tech Stack
+
+- **Framework**: Flutter 3.x
+- **State**: Riverpod (Generators)
+- **Database**: Drift (SQLite)
+- **Network**: Dio
+- **Animations**: Staggered Animations & Hero
+- **Storage**: Shared Preferences (UX Persistence)
+- **DevOps**: GitHub Actions (CI/CD)
+
+---
+
+## 📖 Setup Guide
+
+1. **Install Dependencies**: `flutter pub get`
+2. **Generate Code**: `dart run build_runner build --delete-conflicting-outputs`
+3. **Generate Assets**: `dart run flutter_launcher_icons`
+4. **Run**: `flutter run`
