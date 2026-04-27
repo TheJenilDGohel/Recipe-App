@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:geolocator/geolocator.dart';
@@ -42,7 +44,7 @@ class FavoritesScreen extends ConsumerWidget {
                         ),
                       ),
                       TextButton(
-                        onPressed: () => ref.read(locationPermissionStatusProvider.notifier).request(),
+                        onPressed: () => unawaited(ref.read(locationPermissionStatusProvider.notifier).request()),
                         child: const Text('ENABLE'),
                       ),
                     ],
