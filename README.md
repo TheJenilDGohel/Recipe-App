@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="assets/images/app_logo.png" width="160" height="160" alt="App Logo">
+  <img src="assets/images/app_logo_bg.png" width="160" height="160" alt="App Logo">
 </p>
 
 # 🍳 Context-Aware Recipe Discovery
