@@ -1,0 +1,35 @@
+{
+  "_meta": { "updated_at": "2026-04-27T02:00:00.000Z", "version": 1 },
+  "entries": {
+    "lib/main.dart": {
+      "exports": ["main", "MyApp"],
+      "imports": ["flutter/material.dart", "flutter_riverpod/flutter_riverpod.dart", "src/core/services/notification_service.dart", "src/core/widgets/offline_banner.dart", "src/features/recipes/presentation/screens/home_screen.dart"],
+      "type": "entry-point"
+    },
+    "lib/src/features/recipes/presentation/screens/home_screen.dart": {
+      "exports": ["HomeScreen"],
+      "imports": ["flutter/material.dart", "flutter_riverpod/flutter_riverpod.dart", "geolocator/geolocator.dart", "src/core/services/notification_service.dart", "src/core/widgets/empty_state.dart", "src/core/widgets/error_view.dart", "src/features/recipes/presentation/providers/contextual_discovery_provider.dart", "src/features/recipes/presentation/providers/search_provider.dart", "src/features/recipes/presentation/screens/favorites_screen.dart", "src/features/recipes/presentation/screens/recipe_detail_screen.dart", "src/features/recipes/presentation/widgets/contextual_carousel.dart", "src/features/recipes/presentation/widgets/recipe_card.dart", "src/features/recipes/presentation/widgets/recipe_shimmer.dart", "src/features/recipes/presentation/widgets/search_bar.dart"],
+      "type": "module"
+    },
+    "lib/src/features/recipes/presentation/screens/favorites_screen.dart": {
+      "exports": ["FavoritesScreen"],
+      "imports": ["flutter/material.dart", "flutter_riverpod/flutter_riverpod.dart", "src/core/widgets/empty_state.dart", "src/core/widgets/error_view.dart", "src/features/recipes/presentation/providers/favorites_provider.dart", "src/features/recipes/presentation/widgets/recipe_card.dart", "recipe_detail_screen.dart"],
+      "type": "module"
+    },
+    "lib/src/features/recipes/presentation/screens/recipe_detail_screen.dart": {
+      "exports": ["RecipeDetailScreen"],
+      "imports": ["cached_network_image/cached_network_image.dart", "flutter/material.dart", "flutter_riverpod/flutter_riverpod.dart", "src/core/widgets/error_view.dart", "src/features/recipes/domain/models/meal.dart", "../providers/recipe_details_provider.dart", "../widgets/recipe_shimmer.dart", "../widgets/favorite_toggle.dart"],
+      "type": "module"
+    },
+    "lib/src/core/widgets/error_view.dart": {
+      "exports": ["ErrorView"],
+      "imports": ["flutter/material.dart"],
+      "type": "module"
+    },
+    "lib/src/core/widgets/empty_state.dart": {
+      "exports": ["EmptyState"],
+      "imports": ["flutter/material.dart"],
+      "type": "module"
+    }
+  }
+}

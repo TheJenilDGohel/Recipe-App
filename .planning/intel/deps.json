@@ -1,0 +1,35 @@
+{
+  "_meta": { "updated_at": "2026-04-27T02:00:00.000Z", "version": 1 },
+  "entries": {
+    "flutter_riverpod": {
+      "version": "^2.6.1",
+      "type": "production",
+      "invocation": "require",
+      "used_by": ["lib/main.dart", "lib/src/features/recipes/presentation/screens/home_screen.dart", "lib/src/features/recipes/presentation/screens/favorites_screen.dart"]
+    },
+    "drift": {
+      "version": "^2.20.0",
+      "type": "production",
+      "invocation": "require",
+      "used_by": ["lib/src/core/database/app_database.dart", "lib/src/features/recipes/data/datasources/recipe_local_data_source.dart"]
+    },
+    "dio": {
+      "version": "^5.9.2",
+      "type": "production",
+      "invocation": "require",
+      "used_by": ["lib/src/core/network/dio_client.dart", "lib/src/core/network/api_service.dart"]
+    },
+    "geolocator": {
+      "version": "^13.0.2",
+      "type": "production",
+      "invocation": "require",
+      "used_by": ["lib/src/features/recipes/presentation/screens/home_screen.dart", "lib/src/core/services/location_service.dart"]
+    },
+    "flutter_local_notifications": {
+      "version": "^18.0.1",
+      "type": "production",
+      "invocation": "require",
+      "used_by": ["lib/src/core/services/notification_service.dart", "lib/main.dart"]
+    }
+  }
+}

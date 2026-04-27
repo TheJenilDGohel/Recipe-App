@@ -1,0 +1,10 @@
+{
+  "_meta": { "updated_at": "2026-04-27T02:00:00.000Z", "version": 1 },
+  "languages": ["Dart"],
+  "frameworks": ["Flutter", "Riverpod", "Drift"],
+  "tools": ["build_runner", "Geolocator", "Dio", "Freezed"],
+  "build_system": "flutter build",
+  "test_framework": "flutter_test",
+  "package_manager": "pub",
+  "content_formats": ["Markdown (planning, readme)", "YAML (pubspec)", "Dart (source code)"]
+}
