@@ -61,6 +61,7 @@ Moving beyond static keywords, the app features a hybrid **Recommendation Engine
 ## ✨ Features & Polish
 
 - **120Hz Support**: Buttery-smooth scrolling optimized for modern displays.
+- **Portrait Lock**: Orientation explicitly locked to Portrait to ensure UI integrity and consistent UX.
 - **Premium UI**: Large scrolling `SliverAppBar`, staggered entrance animations, and Hero transitions.
 - **Ethical UX**: Informative dialogs that explain the *why* before asking for system permissions.
 - **Total Offline Resilience**: Fully functional cookbook, including cached images and SQL data.
