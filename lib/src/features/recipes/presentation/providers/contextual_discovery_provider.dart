@@ -3,6 +3,8 @@ import 'package:recipe_app/src/core/services/location_service.dart';
 import 'package:recipe_app/src/features/recipes/data/repositories/recipe_repository_impl.dart';
 import 'package:recipe_app/src/features/recipes/domain/models/meal.dart';
 
+import 'package:recipe_app/src/features/recipes/presentation/providers/favorites_provider.dart';
+
 part 'contextual_discovery_provider.g.dart';
 
 @riverpod
@@ -135,15 +137,51 @@ Future<String> contextualDiscoverySubtitle(ContextualDiscoverySubtitleRef ref) a
 @riverpod
 Future<List<Meal>> trendingRecipes(TrendingRecipesRef ref) async {
   final repo = ref.watch(recipeRepositoryProvider);
+  final favoritesAsync = ref.watch(favoritesProvider);
   
-  // Use a rotating set of search terms for variety
-  final keywords = ['Pasta', 'Seafood', 'Vegetarian', 'Chicken', 'Beef', 'Lamb', 'Pork', 'Side', 'Dessert'];
-  final now = DateTime.now();
-  final keyword = keywords[now.minute % keywords.length];
+  List<Meal> recommendations = [];
 
-  final meals = await repo.searchMeals(keyword);
+  // 1. ANALYZE FAVORITES for Personalization
+  final favorites = favoritesAsync.value ?? [];
+  if (favorites.isNotEmpty) {
+    // Count category frequencies
+    final categoryCounts = <String, int>{};
+    for (final meal in favorites) {
+      if (meal.category.isNotEmpty) {
+        categoryCounts[meal.category] = (categoryCounts[meal.category] ?? 0) + 1;
+      }
+    }
+
+    if (categoryCounts.isNotEmpty) {
+      // Find the most frequent category
+      final topCategory = categoryCounts.entries
+          .reduce((a, b) => a.value > b.value ? a : b)
+          .key;
+      
+      recommendations = await repo.filterByCategory(topCategory);
+    }
+  }
+
+  // 2. COLD START / NO FAVORITES: Fallback to rotating keywords
+  if (recommendations.isEmpty) {
+    final keywords = ['Pasta', 'Seafood', 'Vegetarian', 'Chicken', 'Beef', 'Dessert'];
+    final now = DateTime.now();
+    final keyword = keywords[now.minute % keywords.length];
+    recommendations = await repo.searchMeals(keyword);
+  }
+
+  // 3. INJECT SERENDIPITY: Add 1 completely random meal to the mix
+  try {
+    final randomMeal = await repo.getRandomMeal();
+    if (randomMeal != null && !recommendations.any((m) => m.id == randomMeal.id)) {
+      recommendations.add(randomMeal);
+    }
+  } catch (_) {
+    // Random fail is fine, we still have the list
+  }
+
+  // 4. SHUFFLE: Ensure the engine feels dynamic
+  final shuffled = List<Meal>.from(recommendations)..shuffle();
   
-  // Shuffle and limit to provide variety
-  final shuffled = List<Meal>.from(meals)..shuffle();
   return shuffled;
 }
