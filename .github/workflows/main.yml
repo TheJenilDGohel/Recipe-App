@@ -40,7 +40,7 @@ jobs:
   build_and_release:
     needs: lint_and_test
     runs-on: ubuntu-latest
-    if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+    if: (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && github.ref == 'refs/heads/master'
     permissions:
       contents: write
     steps:
