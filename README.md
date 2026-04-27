@@ -1,64 +1,106 @@
-# Context-Aware Recipe Discovery
+# 🍳 Context-Aware Recipe Discovery
 ## Flutter Recruitment Assignment - ICSPL
 
-This repository contains the implementation of the "Context-Aware Recipe Discovery" application as per the recruitment assignment requirements.
+[![CI/CD Pipeline](https://github.com/TheJenilDGohel/Recipe-App/actions/workflows/main.yml/badge.svg)](https://github.com/TheJenilDGohel/Recipe-App/actions)
+[![Release](https://img.shields.io/github/v/release/TheJenilDGohel/Recipe-App?include_prereleases)](https://github.com/TheJenilDGohel/Recipe-App/releases)
+
+A production-grade Flutter application that provides an intelligent, offline-capable recipe discovery experience. It leverages real-time context (Location & Time) to suggest the perfect meal.
+
+---
 
 ## 🏗️ Architectural Choices
 
-The application is built using **Feature-Driven Clean Architecture**. This choice was made to ensure the code remains modular, testable, and scalable.
+The application is built using **Feature-Driven Clean Architecture**. This choice ensures the codebase remains modular, testable, and scalable.
 
 ### 1. Layered Separation (Clean Architecture)
-- **Data Layer**: Handles all external data interactions. We use the **Repository Pattern** to abstract data sources (TheMealDB API and Drift SQLite) from the rest of the app. This allows us to implement offline-first logic seamlessly.
-- **Domain Layer**: Contains the core business logic and entities. This layer is independent of any external libraries or UI components, ensuring it's easy to test and maintain.
+- **Data Layer**: Handles all external data interactions. We use the **Repository Pattern** to abstract data sources (TheMealDB API and Drift SQLite).
+- **Domain Layer**: Contains the core business logic, entities, and repository interfaces. Independent of external libraries or UI.
 - **Presentation Layer**: Built with Flutter widgets and managed by **Riverpod**.
 
 ### 2. State Management: Riverpod
 I chose **Riverpod** over Bloc or MobX for its:
-- **Compile-time safety**: No more `ProviderNotFoundException`.
-- **Flexibility**: Easier to handle asynchronous data with `AsyncValue`.
-- **Testability**: Simple to override providers during testing without boilerplate.
+- **Compile-time safety**: Eliminates `ProviderNotFoundException`.
+- **Async Handling**: Native support for asynchronous data with `AsyncValue`.
+- **Provider Overrides**: Simplifies testing by allowing easy dependency injection.
 
 ### 3. Persistence: Drift (SQLite)
-For local storage, **Drift** was selected because it provides:
-- **Type-safe queries**: Generated code ensures we don't have runtime SQL errors.
-- **Performance**: High-speed interactions for a smooth offline experience.
-- **Reactive updates**: UI updates automatically when data in the database changes.
+For local storage, **Drift** provides:
+- **Type-safe queries**: Prevents runtime SQL errors through code generation.
+- **Performance**: High-speed batch operations for a smooth offline experience.
+- **Reactive updates**: Automatically refreshes UI when data changes.
 
 ### 4. Background Isolation
-To prevent UI freezing (jank), all heavy JSON parsing and database mapping are performed in **background isolates**. This ensures a consistent 60 FPS even when processing large recipe lists.
+To maintain a consistent 60 FPS, all heavy JSON parsing and database mapping are performed in **background isolates**, preventing UI jank.
+
+---
+
+## 🎨 Branding & Visual Identity
+
+### The "Context Cloche" Logo
+The app features a custom-designed minimalist brand identity:
+- **The Cloche (Plate Cover)**: Represents the high-quality culinary content.
+- **The Location Pin Handle**: Symbolizes location-aware discovery.
+- **The Clock Hand**: Highlights time-based contextual logic.
+
+### Premium Design System
+- **Primary Theme**: Deep Navy (`#2D3142`) for a sophisticated, professional feel.
+- **Accent**: Vibrant Purple (`#7C3AED`) for key actions and branding elements.
+- **Visual Polish**: Integrated **Shimmer/Skeleton** loaders, **Hero transitions**, and **Native Splash Screens**.
 
 ---
 
 ## 🚀 CI/CD Pipeline & Trigger Instructions
 
-The project includes a fully automated **GitHub Actions** pipeline (`.github/workflows/main.yml`) that handles verification and deployment.
+The project includes a robust **GitHub Actions** pipeline (`.github/workflows/main.yml`) that automates quality control and distribution.
 
 ### Automated Triggers
-- **Verification**: Every **Pull Request** or **Push** to any branch triggers the `Analyze & Test` job to ensure code quality and stability.
-- **Release**: Every **Push to the `master` branch** triggers the full pipeline, which builds a Release APK and uploads it to the GitHub Releases section.
+- **Verification**: Every **Pull Request** or **Push** to `master` triggers linting and unit tests.
+- **Release**: Every **Push to the `master` branch** builds a Release APK and uploads it to GitHub Releases.
 
-### How to Manually Trigger the Pipeline
-For evaluation purposes, the workflow supports manual triggers:
-1. Navigate to the **"Actions"** tab in this GitHub repository.
-2. Select the **"CI/CD Pipeline"** workflow from the left sidebar.
-3. Click the **"Run workflow"** button.
-4. Select the branch (usually `master`) and click **"Run workflow"**.
+### How to Manually Trigger
+1. Go to the **"Actions"** tab.
+2. Select **"CI/CD Pipeline"**.
+3. Click **"Run workflow"** and select the `master` branch.
 
-### 📦 Artifact (Release APK)
-The latest successfully built APK can always be found in the **[Releases](../../releases)** section of this repository.
+### 📦 Download Artifact (Release APK)
+The latest successfully built APK is available in the **[Releases](../../releases)** section.
+
+---
+
+## 🛠️ Tech Stack & Setup
+
+### Core Technologies
+- **Framework**: Flutter 3.x
+- **State Management**: Riverpod (Generators)
+- **Database**: Drift (SQLite)
+- **Networking**: Dio
+- **Intelligence**: Geolocator, Geocoding, Time-zone logic
+- **Engagement**: Flutter Local Notifications
+
+### Setup & Running
+
+1. **Clone the repository.**
+2. **Install dependencies**:
+   ```bash
+   flutter pub get
+   ```
+3. **Generate required code** (Drift/Riverpod/Freezed):
+   ```bash
+   dart run build_runner build --delete-conflicting-outputs
+   ```
+4. **Generate Assets** (Icons/Splash):
+   ```bash
+   dart run flutter_launcher_icons
+   ```
+5. **Run the app**:
+   ```bash
+   flutter run
+   ```
 
 ---
 
 ## ✨ Implementation Highlights
 
-- **Smart Context**: Homepage dynamically suggests meals based on the user's **local time** (Breakfast/Lunch/Dinner) and **GPS location** (Local Cuisines).
-- **Offline Resilience**: Full support for favoriting and viewing recipes offline with cached images.
-- **Proactive Engagement**: Scheduled notifications for meal reminders with graceful permission handling.
-- **Premium UI**: Shimmer loaders, Hero transitions, and implicit animations for a polished feel.
-
-## 🛠️ Setup & Running
-
-1. **Clone the repository.**
-2. **Install dependencies**: `flutter pub get`
-3. **Generate code**: `dart run build_runner build --delete-conflicting-outputs`
-4. **Run the app**: `flutter run`
+- **Smart Context**: Homepage dynamically adjusts based on **local time** (Breakfast/Lunch/Dinner) and **GPS location** (Region-specific recipes).
+- **Offline Resilience**: Seamless transition to local data when network fails; favorited recipes are always available.
+- **Proactive Engagement**: Scheduled meal-time notifications with graceful permission handling.
