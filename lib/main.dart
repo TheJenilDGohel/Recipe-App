@@ -28,8 +28,13 @@ Future<void> main() async {
   }
 
   final container = ProviderContainer();
-  final notificationService = container.read(notificationServiceProvider);
-  await notificationService.init();
+  
+  try {
+    final notificationService = container.read(notificationServiceProvider);
+    await notificationService.init().timeout(const Duration(seconds: 5));
+  } catch (e) {
+    debugPrint('Notification Service initialization failed: $e');
+  }
 
   runApp(
     UncontrolledProviderScope(
